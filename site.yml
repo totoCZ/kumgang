@@ -20,7 +20,8 @@
     - role: dns_slave
       tags: dns_slave
 - hosts: group_prometheus
-
+  vars_files:
+    - secrets.yml
   #strategy: free
   roles:
     - role: prometheus
