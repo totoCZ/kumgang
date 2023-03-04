@@ -3,7 +3,6 @@ Description=pvebackup timer
 
 [Timer]
 OnCalendar=daily
-RandomizedDelaySec=12h
 Unit=pvebackup.service
 
 [Install]
