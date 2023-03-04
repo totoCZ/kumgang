@@ -22,7 +22,7 @@ scrape_configs:
         - '172.16.32.1:9100'
         - '172.16.32.3:9100'
         - '172.16.32.6:9100'
-{% for item in groups['proxmox_proxmox_qemu'] %}
+{% for item in groups['proxmox_proxmox_qemu'] | sort %}
         - '{{ hostvars[item]['ansible_default_ipv4']['address'] }}:9100'
 {% endfor %}
 
@@ -30,7 +30,7 @@ scrape_configs:
     static_configs:
       - targets:
         - '172.16.0.209:9153'
-{% for item in groups['slaves'] %}
+{% for item in groups['slaves'] | sort %}
         - '{{ hostvars[item]['ansible_nm_toto']['ipv4']['address'] }}:9153'
 {% endfor %}
 
