@@ -1,0 +1,24 @@
+- name: Ensure /etc/cron.daily/netdata-updater does not exist
+  file:
+    path: /etc/cron.daily/netdata-updater
+    state: absent
+
+- name: Configure netdata on slaves
+  copy:
+    src: netdata_slave.conf
+    dest: /etc/netdata/netdata.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart netdata
+  when: inventory_hostname != "monitoring"
+
+- name: Configure netdata stream.conf on slave
+  copy:
+    src: netdata_stream_slave.conf
+    dest: /etc/netdata/stream.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart netdata
+  when: inventory_hostname != "monitoring"

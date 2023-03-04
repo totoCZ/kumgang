@@ -1,0 +1,16 @@
+# ensure qemu-guest-agent installed and running
+- name: Ensure qemu-guest-agent installed
+  apt:
+    name: qemu-guest-agent
+    state: present
+
+- name: Ensure qemu-guest-agent running
+  service:
+    name: qemu-guest-agent
+    state: started
+    
+- name: Disable fwupd-refresh.timer
+  systemd:
+    name: fwupd-refresh.timer
+    enabled: no
+    state: stopped

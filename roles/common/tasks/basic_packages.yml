@@ -1,0 +1,84 @@
+- name: Install basic packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - htop
+    - mtr-tiny
+    - msmtp
+    - msmtp-mta
+    - zsh
+    - prometheus-node-exporter
+    - micro
+    - vnstat
+    - unzip
+    - iftop
+    - iotop-c
+    - tcpdump
+    - strace
+    - apt-transport-https
+    - ncdu
+    - systemd-journal-remote
+# speedtest
+
+- name: Enable backports
+  apt_repository:
+    repo: deb http://deb.debian.org/debian {{ ansible_distribution_release }}-backports main
+    state: present
+  when: ansible_distribution == "Debian"
+
+- name: Pin backports
+  copy:
+    content: |
+      Package: *
+      Pin: release a={{ ansible_distribution_release }}-backports
+      Pin-Priority: 990
+    dest: /etc/apt/preferences.d/backports
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_distribution == "Debian"
+
+#- name: Remove lxd, snapd, core20
+#  community.general.snap:
+#    name: "{{ item }}"
+#    state: absent
+#  with_items:
+#    - lxd
+#    - core20
+#    - core18
+#    - google-cloud-cli
+#    - snapd
+#  when: ansible_distribution == "Ubuntu"
+
+- name: Disable snapd
+  systemd:
+    name: snapd
+    enabled: no
+    state: stopped
+  when: ansible_distribution == "Ubuntu"
+
+- name: Disable snapd.socket
+  systemd:
+    name: snapd.socket
+    enabled: no
+    state: stopped
+  when: ansible_distribution == "Ubuntu"
+
+- name: disable and stop services
+  systemd:
+    name: "{{ item }}"
+    state: stopped
+    enabled: no
+  with_items:
+    - multipathd
+    - lxcfs
+    - modemmanager
+    - udisks2
+    - uuidd
+    - chrony
+    - wpa_supplicant
+    - cron
+    - unattended-upgrades
+    - lxc-monitord
+  ignore_errors: yes

@@ -1,0 +1,25 @@
+- name: set journald storage to volatile
+  lineinfile:
+    dest: /etc/systemd/journald.conf
+    regexp: '^#?Storage='
+    line: 'Storage=volatile'
+    state: present
+  notify: restart systemd-journald
+  
+- name: disable and stop rsyslogd
+  systemd:
+    name: rsyslog
+    state: stopped
+    enabled: no
+
+- name: edit journal-upload.conf
+  lineinfile:
+    dest: /etc/systemd/journal-upload.conf
+    regexp: '^#?URL='
+    line: 'URL=http://172.16.0.217:19532'
+
+- name: enable and start systemd-journal-upload
+  systemd:
+    name: systemd-journal-upload
+    state: started
+    enabled: yes

@@ -1,0 +1,34 @@
+- hosts: all
+  #strategy: free
+  vars_files:
+    - secrets.yml
+  roles:
+  - role: common
+    tags: common
+- hosts: proxmox_proxmox_qemu
+  vars_files:
+    - secrets.yml
+  #strategy: free
+  roles:
+    - role: proxmox_qemu
+      tags: proxmox_qemu
+- hosts: slaves
+  vars_files:
+    - secrets.yml
+  #strategy: free
+  roles:
+    - role: dns_slave
+      tags: dns_slave
+- hosts: group_prometheus
+
+  #strategy: free
+  roles:
+    - role: prometheus
+      tags: prometheus
+- hosts: proxmox_nodes
+  vars_files:
+    - secrets.yml
+  #strategy: free
+  roles:
+    - role: proxmox
+      tags: proxmox

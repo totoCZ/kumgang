@@ -1,0 +1,59 @@
+ - name: Create pvebackup service
+   template:
+     src: pvebackup.service.j2
+     dest: /etc/systemd/system/pvebackup.service
+     owner: root
+     group: root
+     mode: 0644
+
+ - name: Create pvebackup timer
+   copy:
+     src: pvebackup.timer
+     dest: /etc/systemd/system/pvebackup.timer
+     owner: root
+     group: root
+     mode: 0644
+
+ - name: Ensure timer started and enabled
+   systemd:
+     name: pvebackup.timer
+     state: started
+     enabled: yes
+
+ - name: borgbackup installed
+   apt:
+     name: borgbackup
+     state: present
+     update_cache: yes
+
+ - name: Borgmatic package installed
+   apt:
+     name: borgmatic
+     state: present
+
+ - name: Create /etc/borgmatic
+   file:
+     path: /etc/borgmatic
+     state: directory
+     owner: root
+     group: root
+     mode: 0755
+
+ - name: Copy /etc/borgmatic/config.yaml
+   template:
+     src: borgmatic_config.yaml.j2
+     dest: /etc/borgmatic/config.yaml
+     owner: root
+     group: root
+     mode: 0640
+
+# libpam-google-authenticator
+# lmsensors
+# ksmtuned ksm-control-daemon
+# linux-cpupower
+# freeipmi
+# pve-headers
+# unattended-upgrades
+# cockpit
+# prometheus-node-exporter-collectors
+# lshw

@@ -1,0 +1,16 @@
+- name: Template prometheus.yml to /etc/prometheus/prometheus.yml
+  template:
+    src: prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+    owner: prometheus
+    group: prometheus
+    mode: 0644
+  notify: reload prometheus
+- name: Set prometheus retention time
+  lineinfile:
+    path: /etc/default/prometheus
+    regexp: '^ARGS='
+    line: 'ARGS="--storage.tsdb.retention.time=30d"'
+  notify: reload prometheus
+- include_tasks: log-incoming.yml
+- include_tasks: netdata.yml

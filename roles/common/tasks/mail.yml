@@ -1,0 +1,15 @@
+- name: copy file /etc/msmtprc
+  template:
+    src: msmtprc.j2
+    dest: /etc/msmtprc
+    owner: root
+    group: root
+    mode: 0644
+
+- name: copy file /etc/aliases
+  copy:
+    src: aliases
+    dest: /etc/aliases
+    owner: root
+    group: root
+    mode: 0644

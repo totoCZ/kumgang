@@ -1,0 +1,17 @@
+- name: Configure netdata
+  copy:
+    src: netdata_master.conf
+    dest: /etc/netdata/netdata.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart netdata
+
+- name: Configure netdata stream.conf on master
+  copy:
+    src: netdata_stream_master.conf
+    dest: /etc/netdata/stream.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart netdata

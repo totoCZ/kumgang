@@ -1,0 +1,82 @@
+- name: add user coredns
+  user:
+    name: coredns
+    shell: /usr/bin/zsh
+    state: present
+    groups: sudo
+    append: yes
+
+- name: ensure .ssh exists in coredns home
+  file:
+    path: /home/coredns/.ssh
+    state: directory
+    owner: coredns
+    group: coredns
+    mode: 0700
+
+- name: Allow dns authorized key
+  authorized_key:
+    user: coredns
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDsmZ6PUhsFa4q3dWayvgOLxlvBbwDqOH0/KrGdqXMzS root@dns"
+    state: present
+
+- name: symlink /etc/coredns -> /home/coredns/coredns
+  file:
+    src: /home/coredns/coredns
+    dest: /etc/coredns
+    state: link
+    force: yes
+
+- name: symlink /var/lib/coredns -> /home/coredns/coredns
+  file:
+    src: /home/coredns/coredns
+    dest: /var/lib/coredns
+    state: link
+    force: yes
+
+- name: Check if CoreDNS is already installed
+  stat:
+    path: "{{ coredns_dir }}/coredns"
+  register: coredns_installed
+  ignore_errors: yes
+
+- name: Download and extract CoreDNS
+  get_url:
+    url: "{{ coredns_url }}"
+    dest: /tmp/coredns.tgz
+  when: not coredns_installed.stat.exists
+
+- name: Extract CoreDNS archive
+  unarchive:
+    src: /tmp/coredns.tgz
+    dest: "{{ coredns_dir }}"
+    remote_src: yes
+  when: not coredns_installed.stat.exists
+
+# ensure DNSStubListener=no is disabled
+- name: disable DNSStubListener
+  lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^DNSStubListener='
+    line: 'DNSStubListener=no'
+    state: present
+    backup: yes
+  notify: restart systemd-resolved
+
+- name: Install CoreDNS systemd service
+  copy:
+    src: coredns.service
+    dest: /etc/systemd/system/coredns.service
+    owner: root
+    group: root
+    mode: 0644
+    force: yes
+  notify:
+    - restart coredns
+
+- name: enable coredns
+  systemd:
+    name: coredns
+    state: started
+    enabled: yes
+  

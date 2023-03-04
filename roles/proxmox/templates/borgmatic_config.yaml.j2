@@ -1,0 +1,24 @@
+location:
+  source_directories:
+    #- /etc/pve
+    #- /var/lib/vz/images
+    - /
+  repositories:
+    - ssh://u312523@u312523.your-storagebox.de:23/./borg/proxmox
+  one_file_system: true
+  exclude_patterns:
+    - /var/lib/vz/images/101
+    - /var/lib/vz/images/105
+    - /var/lib/vz/images/107
+storage:
+  encryption_passphrase: {{ borgmatic_passphrase }}
+  compression: zstd,3
+retention:
+  keep_daily: 30
+consistency:
+  checks:
+    - name: repository
+      frequency: 2 weeks
+    - name: archives
+      frequency: 1 month
+  check_last: 3

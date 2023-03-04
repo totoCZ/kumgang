@@ -1,0 +1,57 @@
+global:
+  scrape_interval: 60s
+  evaluation_interval: 60s
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets: ['localhost:9093']
+
+rule_files:
+  - "recording/*.yml"
+  - "alerts/*.yml"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: node
+    scrape_interval: 30s
+    static_configs:
+      - targets: 
+        - '172.16.32.1:9100'
+        - '172.16.32.3:9100'
+        - '172.16.32.6:9100'
+{% for item in groups['proxmox_proxmox_qemu'] %}
+        - '{{ hostvars[item]['ansible_default_ipv4']['address'] }}:9100'
+{% endfor %}
+
+  - job_name: coredns
+    static_configs:
+      - targets:
+        - '172.16.0.209:9153'
+{% for item in groups['slaves'] %}
+        - '{{ hostvars[item]['ansible_nm_toto']['ipv4']['address'] }}:9153'
+{% endfor %}
+
+  - job_name: caddy
+    static_configs:
+      - targets:
+        - '172.16.0.210:2019'
+
+  - job_name: "nodes"
+    static_configs:
+      - targets: ['172.16.0.223:5054']
+
+  - job_name: "validators"
+    static_configs:
+      - targets: ['172.16.0.222:5064']
+
+  - job_name: "geth"
+    metrics_path: /debug/metrics/prometheus
+    static_configs:
+    - targets: ["[2a10:4740:45:1:9c87:16ff:fea3:4518]:6060"]
+
+  - job_name: alertmanager
+    static_configs:
+      - targets: ['localhost:9093']
