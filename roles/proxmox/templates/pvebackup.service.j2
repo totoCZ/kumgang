@@ -4,5 +4,4 @@ Description=pvebackup
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/cv4pve-autosnap --host localhost --api-token {{ proxmox_token }} --vmid=@all clean --label daily --keep 30
-ExecStart=/usr/local/bin/cv4pve-autosnap --host localhost --api-token {{ proxmox_token }} --vmid=@all,-101,-105,-107 snap --label daily --keep 30
-ExecStart=/usr/bin/borgmatic --verbosity 1 --syslog-verbosity 1
+ExecStart=/usr/local/bin/cv4pve-autosnap --host localhost --api-token {{ proxmox_token }} --vmid=@all,-101,-105,-107,-109 snap --label daily --keep 30
