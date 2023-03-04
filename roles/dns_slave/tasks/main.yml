@@ -3,7 +3,6 @@
     name: coredns
     shell: /usr/bin/zsh
     state: present
-    groups: sudo
     append: yes
 
 - name: ensure .ssh exists in coredns home
