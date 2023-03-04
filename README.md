@@ -1,4 +1,4 @@
-# # 금강산 R & D 조직
+# 금강산 R & D 조직
 Warning! Mt. Kumgang has been activated!
 ## Documentation
 [Install instructions](https://www.youtube.com/watch?v=4-KSjb35jAM)  
