@@ -47,7 +47,7 @@
      group: root
      mode: 0640
 
- - name: instal numad
+ - name: install numad
    apt:
      name: numad
      state: present
@@ -58,6 +58,20 @@
      state: started
      enabled: yes
 
+ - name: install sysfsutils
+   apt:
+     name: sysfsutils
+     state: present
+
+ - name: set /sys/kernel/mm/ksm/merge_across_nodes to 0 (persistent using sysfs.d)
+   copy:
+     content: |
+       kernel/mm/ksm/merge_across_nodes = 0
+     dest: /etc/sysfs.d/ksm.conf
+     owner: root
+     group: root
+     mode: 0644
+    
 # libpam-google-authenticator
 # lmsensors
 # ksmtuned ksm-control-daemon
