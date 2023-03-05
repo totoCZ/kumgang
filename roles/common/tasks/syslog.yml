@@ -12,6 +12,12 @@
     state: stopped
     enabled: no
 
+- name: purge rsyslog when installed
+  package:
+    name: rsyslog
+    state: absent
+  when: ansible_facts.packages['rsyslog'] is defined
+    
 - name: edit journal-upload.conf
   lineinfile:
     dest: /etc/systemd/journal-upload.conf
