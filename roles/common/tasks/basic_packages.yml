@@ -39,23 +39,24 @@
     mode: 0644
   when: ansible_distribution == "Debian"
 
-- name: Remove lxd, snapd, core20
-  community.general.snap:
-    name: "{{ item }}"
-    state: absent
-  with_items:
-    - lxd
-    - core20
-    - core18
-    - google-cloud-cli
-    - snapd
-  when: ansible_distribution == "Ubuntu" and ansible_facts.packages['snapd'] is defined
+# - name: Remove lxd, snapd, core20
+#   community.general.snap:
+#     name: "{{ item }}"
+#     state: absent
+#   with_items:
+#     - lxd
+#     - core20
+#     - core18
+#     - google-cloud-cli
+#     - snapd
+#   when: ansible_distribution == "Ubuntu"
 
 - name: purge snapd
   package:
     name: snapd
     state: absent
-  when: ansible_distribution == "Ubuntu" and ansible_facts.packages['snapd'] is defined
+  when: ansible_distribution == "Ubuntu"
+  ignore_errors: yes
 
 - name: disable and stop services
   systemd:
