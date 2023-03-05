@@ -47,6 +47,17 @@
      group: root
      mode: 0640
 
+ - name: instal numad
+   apt:
+     name: numad
+     state: present
+
+ - name: numad started and enabled
+   systemd:
+     name: numad
+     state: started
+     enabled: yes
+
 # libpam-google-authenticator
 # lmsensors
 # ksmtuned ksm-control-daemon
