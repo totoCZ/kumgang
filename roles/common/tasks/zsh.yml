@@ -9,6 +9,12 @@
     shell: /usr/bin/zsh
   with_items:
     - toto
+    
+- name: add toto to adm group
+  user:
+    name: toto
+    groups: adm
+    append: yes
 
 - name: copy file /root/.zshrc
   copy:
