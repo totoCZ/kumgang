@@ -1,15 +1,14 @@
-- name: Set mq-deadline on all disks, persistent using udev, for all disks sd[a-z]
-  lineinfile:
-    path: /etc/udev/rules.d/60-scheduler.rules
-    line: 'ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/scheduler}="mq-deadline"'
-    state: present
-    create: yes
-
-- name: Set mq-deadline on all disks, persistent using udev, for all disks vd[a-z]
-  lineinfile:
-    path: /etc/udev/rules.d/60-scheduler.rules
-    line: 'ACTION=="add|change", KERNEL=="vd[a-z]", ATTR{queue/scheduler}="mq-deadline"'
-    state: present
+- name: Install /etc/udev/rules.d/60-scheduler.rules
+  copy:
+    content: |
+      # Set mq-deadline on all disks, persistent using udev, for all disks sd[a-z]
+      ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/scheduler}="mq-deadline"
+      # Set mq-deadline on all disks, persistent using udev, for all disks vd[a-z]
+      ACTION=="add|change", KERNEL=="vd[a-z]", ATTR{queue/scheduler}="none"
+    dest: /etc/udev/rules.d/60-scheduler.rules
+    owner: root
+    group: root
+    mode: 0644
 
 - name: Copy /usr/share/systemd/tmp.mount to /etc/systemd/system/tmp.mount, remote_src
   copy:
