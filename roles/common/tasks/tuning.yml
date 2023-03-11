@@ -3,17 +3,19 @@
     path: /etc/udev/rules.d/60-scheduler.rules
     line: 'ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/scheduler}="mq-deadline"'
     state: present
+    create: yes
 
 - name: Set mq-deadline on all disks, persistent using udev, for all disks vd[a-z]
   lineinfile:
     path: /etc/udev/rules.d/60-scheduler.rules
     line: 'ACTION=="add|change", KERNEL=="vd[a-z]", ATTR{queue/scheduler}="mq-deadline"'
-    state: persistent
+    state: present
 
-- name: /etc/systemd/system/tmp.mount
+- name: Copy /usr/share/systemd/tmp.mount to /etc/systemd/system/tmp.mount, remote_src
   copy:
     src: /usr/share/systemd/tmp.mount
     dest: /etc/systemd/system/tmp.mount
+    remote_src: yes
     owner: root
     group: root
     mode: 0644
@@ -24,16 +26,14 @@
     state: started
     enabled: yes
 
-- name: /etc/fstab remove discard
-  lineinfile:
+- name: Replace defaults in /etc/fstab
+  replace:
     path: /etc/fstab
-    regexp: 'discard'
-    line: ''
-    state: present
+    regexp: '^(?!#)(\S+\s+\S+\s+\S+\s+)defaults(\s+.*)$'
+    replace: '\1defaults,noatime,nodiratime\2'
 
-- name: /etc/fstab ensure "defaults,noatime,nodiratime" is present
-  lineinfile:
+- name: Replace discard,errors=remount-ro in /etc/fstab
+  replace:
     path: /etc/fstab
-    regexp: 'defaults'
-    line: 'defaults,noatime,nodiratime'
-    state: present
+    regexp: '^(?!#)(\S+\s+\S+\s+\S+\s+)discard,errors=remount-ro(\s+.*)$'
+    replace: '\1defaults,noatime,nodiratime\2'
