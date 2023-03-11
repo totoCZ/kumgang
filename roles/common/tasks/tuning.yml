@@ -36,8 +36,8 @@
     replace: '\1defaults,noatime,nodiratime\2'
 
 - name: Install superb sysctl rules! to 99-superb.conf
-  copy:
-    src: 99-superb.conf
+  template:
+    src: 99-superb.conf.j2
     dest: /etc/sysctl.d/99-superb.conf
     owner: root
     group: root
