@@ -7,10 +7,9 @@ location:
     - ssh://u341924@u341924.your-storagebox.de:23/./borg/proxmox
   one_file_system: true
   exclude_patterns:
-    - /var/lib/vz/images/101
-    - /var/lib/vz/images/105
-    - /var/lib/vz/images/107
-    - /var/lib/vz/images/109
+    - /var/lib/vz/images/101/vm-101-disk-1.qcow2
+    - /var/lib/vz/images/105/vm-105-disk-1.qcow2
+    - /var/lib/vz/images/107/vm-107-disk-1.qcow2
 storage:
   encryption_passphrase: {{ borgmatic_passphrase }}
 retention:
