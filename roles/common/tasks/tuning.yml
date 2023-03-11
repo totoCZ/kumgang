@@ -23,17 +23,23 @@
     state: started
     enabled: yes
 
-- name: Replace defaults in /etc/fstab
-  replace:
-    path: /etc/fstab
-    regexp: '^(?!#)(\S+\s+\S+\s+\S+\s+)defaults(\s+.*)$'
-    replace: '\1defaults,noatime,nodiratime\2'
-
 - name: Replace discard,errors=remount-ro in /etc/fstab
   replace:
     path: /etc/fstab
     regexp: '^(?!#)(\S+\s+\S+\s+\S+\s+)discard,errors=remount-ro(\s+.*)$'
-    replace: '\1defaults,noatime,nodiratime\2'
+    replace: '\1defaults,noatime,nodiratime,lazytime,commit=60\2'
+
+- name: Replace defaults in /etc/fstab for ext4
+  replace:
+    path: /etc/fstab
+    regexp: '^(?!#)(\S+\s+\S+\s+ext4\s+)defaults(\s+.*)$'
+    replace: '\1defaults,noatime,nodiratime,lazytime,commit=60\2'
+
+- name: Replace defaults in /etc/fstab for xfs
+  replace:
+    path: /etc/fstab
+    regexp: '^(?!#)(\S+\s+\S+\s+xfs\s+)defaults(\s+.*)$'
+    replace: '\1defaults,noatime,nodiratime,lazytime\2'
 
 - name: Install superb sysctl rules! to 99-superb.conf
   template:
