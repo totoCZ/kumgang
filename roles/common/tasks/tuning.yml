@@ -1,9 +1,7 @@
 - name: Install /etc/udev/rules.d/60-scheduler.rules
   copy:
     content: |
-      # Set mq-deadline on all disks, persistent using udev, for all disks sd[a-z]
       ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/scheduler}="mq-deadline"
-      # Set mq-deadline on all disks, persistent using udev, for all disks vd[a-z]
       ACTION=="add|change", KERNEL=="vd[a-z]", ATTR{queue/scheduler}="none"
     dest: /etc/udev/rules.d/60-scheduler.rules
     owner: root
