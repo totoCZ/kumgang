@@ -74,4 +74,5 @@
     - cron
     - unattended-upgrades
     - lxc-monitord
+    - rsyslog
   ignore_errors: yes

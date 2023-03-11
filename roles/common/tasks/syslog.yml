@@ -6,12 +6,6 @@
     state: present
   notify: restart systemd-journald
   
-- name: disable and stop rsyslogd
-  systemd:
-    name: rsyslog
-    state: stopped
-    enabled: no
-
 - name: purge rsyslog
   package:
     name: rsyslog
