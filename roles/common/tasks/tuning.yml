@@ -1,0 +1,39 @@
+- name: Set mq-deadline on all disks, persistent using udev, for all disks sd[a-z]
+  lineinfile:
+    path: /etc/udev/rules.d/60-scheduler.rules
+    line: 'ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/scheduler}="mq-deadline"'
+    state: present
+
+- name: Set mq-deadline on all disks, persistent using udev, for all disks vd[a-z]
+  lineinfile:
+    path: /etc/udev/rules.d/60-scheduler.rules
+    line: 'ACTION=="add|change", KERNEL=="vd[a-z]", ATTR{queue/scheduler}="mq-deadline"'
+    state: persistent
+
+- name: /etc/systemd/system/tmp.mount
+  copy:
+    src: /usr/share/systemd/tmp.mount
+    dest: /etc/systemd/system/tmp.mount
+    owner: root
+    group: root
+    mode: 0644
+
+- name: enable and start tmp.mount
+  systemd:
+    name: tmp.mount
+    state: started
+    enabled: yes
+
+- name: /etc/fstab remove discard
+  lineinfile:
+    path: /etc/fstab
+    regexp: 'discard'
+    line: ''
+    state: present
+
+- name: /etc/fstab ensure "defaults,noatime,nodiratime" is present
+  lineinfile:
+    path: /etc/fstab
+    regexp: 'defaults'
+    line: 'defaults,noatime,nodiratime'
+    state: present
