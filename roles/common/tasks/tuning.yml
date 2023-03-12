@@ -23,23 +23,23 @@
     state: started
     enabled: yes
 
-- name: Replace discard,errors=remount-ro in /etc/fstab
+- name: Set da magic for ext4 discard
   replace:
-    path: /etc/fstab
-    regexp: '^(?!#)(\S+\s+\S+\s+\S+\s+)discard,errors=remount-ro(\s+.*)$'
-    replace: '\1defaults,noatime,nodiratime,lazytime,commit=60\2'
+     path: /etc/fstab
+     regexp: '^(?!#)(\S+)\s+(\S+)\s+(ext4)\s+(discard[a-z,]+)\s+(\S)\s(\S)\S*$'
+     replace: '\1 \2 \3 defaults,noatime,nodiratime,lazytime,commit=60 \5 \6'
 
-- name: Replace defaults in /etc/fstab for ext4
+- name: Set da magic for ext4
   replace:
-    path: /etc/fstab
-    regexp: '^(?!#)(\S+\s+\S+\s+ext4\s+)defaults(\s+.*)$'
-    replace: '\1defaults,noatime,nodiratime,lazytime,commit=60\2'
+     path: /etc/fstab
+     regexp: '^(?!#)(\S+)\s+(\S+)\s+(ext4)\s+(defaults[a-z,]+)\s+(\S)\s(\S)\S*$'
+     replace: '\1 \2 \3 defaults,noatime,nodiratime,lazytime,commit=60 \5 \6'
 
-- name: Replace defaults in /etc/fstab for xfs
+- name: Set da magic for xfs and who killed captain alex
   replace:
-    path: /etc/fstab
-    regexp: '^(?!#)(\S+\s+\S+\s+xfs\s+)defaults(\s+.*)$'
-    replace: '\1defaults,noatime,nodiratime,lazytime\2'
+     path: /etc/fstab
+     regexp: '^(?!#)(\S+)\s+(\S+)\s+(xfs)\s+(defaults[a-z,]+)\s+(\S)\s(\S)\S*$'
+     replace: '\1 \2 \3 defaults,noatime,nodiratime,lazytime \5 \6'
 
 - name: Install superb sysctl rules! to 99-superb.conf
   template:
@@ -49,3 +49,4 @@
     group: root
     mode: 0644
   notify: reload superb rules
+  ignore_errors: true
