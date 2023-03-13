@@ -10,7 +10,7 @@
   package:
     name: rsyslog
     state: absent
-  ignore_errors: yes
+  ignore_errors: true
     
 - name: edit journal-upload.conf
   lineinfile:
