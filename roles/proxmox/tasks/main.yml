@@ -1,24 +1,24 @@
- - name: Create pvebackup service
-   template:
-     src: pvebackup.service.j2
-     dest: /etc/systemd/system/pvebackup.service
-     owner: root
-     group: root
-     mode: 0644
+# - name: Create pvebackup service
+#   template:
+#     src: pvebackup.service.j2
+#     dest: /etc/systemd/system/pvebackup.service
+#     owner: root
+#     group: root
+#     mode: 0644
 
- - name: Create pvebackup timer
-   copy:
-     src: pvebackup.timer
-     dest: /etc/systemd/system/pvebackup.timer
-     owner: root
-     group: root
-     mode: 0644
+ #- name: Create pvebackup timer
+ #  copy:
+ #    src: pvebackup.timer
+ #    dest: /etc/systemd/system/pvebackup.timer
+ #    owner: root
+ #    group: root
+ #    mode: 0644
 
- - name: Ensure timer started and enabled
-   systemd:
-     name: pvebackup.timer
-     state: started
-     enabled: yes
+ #- name: Ensure timer started and enabled
+ #  systemd:
+ #    name: pvebackup.timer
+ #    state: started
+ #    enabled: yes
 
  - name: borgbackup installed
    apt:
