@@ -3,12 +3,17 @@
     name: "{{ item }}"
     state: present
   with_items:
+    - curl
+    - wget
+    - btop
     - htop
+    - glances
     - mtr-tiny
     - msmtp
     - msmtp-mta
     - zsh
     - prometheus-node-exporter
+    - nano
     - micro
     - vnstat
     - unzip
