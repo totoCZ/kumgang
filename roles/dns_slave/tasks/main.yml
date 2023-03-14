@@ -10,7 +10,7 @@
     state: directory
     owner: coredns
     group: coredns
-    mode: 0700
+    mode: '0700'
 
 - name: Allow dns authorized key
   authorized_key:
@@ -32,24 +32,23 @@
     state: link
     force: yes
 
-- name: Check if CoreDNS is already installed
-  stat:
-    path: "{{ coredns_dir }}/coredns"
-  register: coredns_installed
-  ignore_errors: yes
-
+- name: Check if CoreDNS is already installed and up to date
+  command: "{{ coredns_dir }}/coredns -version"
+  register: coredns_version
+  ignore_errors: true
+  
 - name: Download and extract CoreDNS
   get_url:
     url: "{{ coredns_url }}"
     dest: /tmp/coredns.tgz
-  when: not coredns_installed.stat.exists
+  when: "'CoreDNS Version: {{ coredns_version_pattern }}' not in coredns_version.stdout"
 
 - name: Extract CoreDNS archive
   unarchive:
     src: /tmp/coredns.tgz
     dest: "{{ coredns_dir }}"
     remote_src: yes
-  when: not coredns_installed.stat.exists
+  when: "'CoreDNS Version: {{ coredns_version_pattern }}' not in coredns_version.stdout"
 
 # ensure DNSStubListener=no is disabled
 - name: disable DNSStubListener
@@ -67,7 +66,7 @@
     dest: /etc/systemd/system/coredns.service
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
     force: yes
   notify:
     - restart coredns
@@ -77,4 +76,3 @@
     name: coredns
     state: started
     enabled: yes
-  
