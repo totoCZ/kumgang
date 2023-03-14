@@ -34,21 +34,21 @@
 
 - name: Check if CoreDNS is already installed and up to date
   command: "{{ coredns_dir }}/coredns -version"
-  register: coredns_version
+  register: coredns_version_installed
   ignore_errors: true
   
 - name: Download and extract CoreDNS
   get_url:
     url: "{{ coredns_url }}"
     dest: /tmp/coredns.tgz
-  when: "'CoreDNS Version: {{ coredns_version_pattern }}' not in coredns_version.stdout"
+  when: "'CoreDNS-{{ coredns_version }}' not in coredns_version_installed.stdout"
 
 - name: Extract CoreDNS archive
   unarchive:
     src: /tmp/coredns.tgz
     dest: "{{ coredns_dir }}"
     remote_src: yes
-  when: "'CoreDNS Version: {{ coredns_version_pattern }}' not in coredns_version.stdout"
+  when: "'CoreDNS-{{ coredns_version }}' not in coredns_version_installed.stdout"
 
 # ensure DNSStubListener=no is disabled
 - name: disable DNSStubListener
