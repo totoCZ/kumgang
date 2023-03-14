@@ -36,19 +36,23 @@
   command: "{{ coredns_dir }}/coredns -version"
   register: coredns_version_installed
   ignore_errors: true
-  
+
+- set_fact:
+    coredns_version_to_install: "CoreDNS-{{ coredns_version }}"
+
 - name: Download and extract CoreDNS
   get_url:
     url: "{{ coredns_url }}"
     dest: /tmp/coredns.tgz
-  when: "'CoreDNS-{{ coredns_version }}' not in coredns_version_installed.stdout"
+  when: coredns_version_to_install not in coredns_version_installed.stdout
 
 - name: Extract CoreDNS archive
   unarchive:
     src: /tmp/coredns.tgz
     dest: "{{ coredns_dir }}"
     remote_src: yes
-  when: "'CoreDNS-{{ coredns_version }}' not in coredns_version_installed.stdout"
+  when: coredns_version_to_install not in coredns_version_installed.stdout
+
 
 # ensure DNSStubListener=no is disabled
 - name: disable DNSStubListener
