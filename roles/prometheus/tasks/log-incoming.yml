@@ -50,10 +50,11 @@
 
 - name: Enable remote journal socket, remote journal sink service, Loki and Promtail
   systemd:
-    name:
-      - systemd-journal-remote.socket
-      - systemd-journal-remote.service
-      - loki
-      - promtail
+    name: "{{ item }}"
     enabled: yes
     state: started
+  with_items: 
+    - systemd-journal-remote.socket
+    - systemd-journal-remote.service
+    - loki
+    - promtail
