@@ -1,44 +1,40 @@
-- name: set journald storage to volatile
-  lineinfile:
-    dest: /etc/systemd/journald.conf
-    regexp: '^#?Storage='
-    line: 'Storage=volatile'
-    state: present
-  notify: restart systemd-journald
-  
-- name: purge rsyslog
-  package:
-    name: rsyslog
-    state: absent
-  ignore_errors: true
+- name: Configure journald storage and upload settings
+  block:
+    - name: set journald storage to volatile
+      lineinfile:
+        dest: /etc/systemd/journald.conf
+        regexp: '^#?Storage='
+        line: 'Storage=volatile'
+        state: present
+      notify: restart systemd-journald
     
-- name: edit journal-upload.conf
-  lineinfile:
-    dest: /etc/systemd/journal-upload.conf
-    regexp: '^#?URL='
-    line: 'URL=http://172.16.0.217:19532'
+    - name: edit journal-upload.conf
+      lineinfile:
+        dest: /etc/systemd/journal-upload.conf
+        regexp: '^#?URL='
+        line: 'URL=http://172.16.0.217:19532'
 
-- name: override dir for systemd-journal-upload
-  file:
-    path: /etc/systemd/system/systemd-journal-upload.service.d
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
+    - name: override dir for systemd-journal-upload
+      file:
+        path: /etc/systemd/system/systemd-journal-upload.service.d
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
 
-- name: systemd override systemd-journal-upload to keep restarting
-  copy:
-    content: |
-      [Service]
-      Restart=always
-    dest: /etc/systemd/system/systemd-journal-upload.service.d/override.conf
-    owner: root
-    group: root
-    mode: 0644
+    - name: systemd override systemd-journal-upload to keep restarting
+      copy:
+        content: |
+          [Service]
+          Restart=always
+        dest: /etc/systemd/system/systemd-journal-upload.service.d/override.conf
+        owner: root
+        group: root
+        mode: 0644
 
 
-- name: enable and start systemd-journal-upload
-  systemd:
-    name: systemd-journal-upload
-    state: started
-    enabled: yes
+    - name: enable and start systemd-journal-upload
+      systemd:
+        name: systemd-journal-upload
+        state: started
+        enabled: yes
