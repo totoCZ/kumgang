@@ -32,7 +32,6 @@
         group: root
         mode: 0644
 
-
     - name: enable and start systemd-journal-upload
       systemd:
         name: systemd-journal-upload
