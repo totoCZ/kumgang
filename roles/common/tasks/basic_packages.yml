@@ -1,30 +1,29 @@
 - name: Install basic packages
-  package:
-    name: "{{ item }}"
+  apt:
+    name:
+      - curl
+      - wget
+      - btop
+      - htop
+      - glances
+      - mtr-tiny
+      - msmtp
+      - msmtp-mta
+      - zsh
+      - prometheus-node-exporter
+      - nano
+      - micro
+      - vnstat
+      - unzip
+      - iftop
+      - iotop-c
+      - tcpdump
+      - strace
+      - apt-transport-https
+      - ncdu
+      - systemd-journal-remote
     state: present
-  with_items:
-    - curl
-    - wget
-    - btop
-    - htop
-    - glances
-    - mtr-tiny
-    - msmtp
-    - msmtp-mta
-    - zsh
-    - prometheus-node-exporter
-    - nano
-    - micro
-    - vnstat
-    - unzip
-    - iftop
-    - iotop-c
-    - tcpdump
-    - strace
-    - apt-transport-https
-    - ncdu
-    - systemd-journal-remote
-# speedtest
+
 
 - name: override dir for glances
   file:
