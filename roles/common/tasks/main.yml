@@ -1,3 +1,5 @@
+- name: Populate service facts
+  service_facts:
 - include_tasks: netdata.yml
 - include_tasks: basic_packages.yml
 - include_tasks: zsh.yml

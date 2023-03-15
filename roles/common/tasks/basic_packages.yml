@@ -87,7 +87,7 @@
     name: "{{ item }}"
     state: stopped
     enabled: no
-  with_items:
+  loop:
     - multipathd
     - modemmanager
     - udisks2
@@ -97,6 +97,4 @@
     - cron
     - unattended-upgrades
     - rsyslog
-    #- lxcfs
-    #- lxc-monitord
-  ignore_errors: true
+  when: item in ansible_facts.services.keys()
