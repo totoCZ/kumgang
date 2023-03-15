@@ -50,3 +50,4 @@
     mode: 0644
   notify: reload superb rules
   ignore_errors: true
+  when: not ansible_virtualization_type == "lxc"
