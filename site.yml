@@ -1,33 +1,39 @@
-- name: Load vars from secrets.yml
-  include_vars:
-    file: secrets.yml
-
-- name: Common playbook
-  hosts: all
+- hosts: all
+  #strategy: free
+  vars_files:
+    - secrets.yml
   roles:
-    - role: common
-      tags: common
-
-- name: Proxmox Qemu playbook
-  hosts: proxmox_proxmox_qemu
+  - role: common
+    tags: common
+    
+- hosts: proxmox_proxmox_qemu
+  vars_files:
+    - secrets.yml
+  #strategy: free
   roles:
     - role: proxmox_qemu
       tags: proxmox_qemu
 
-- name: DNS Slave playbook
-  hosts: slaves
+- hosts: slaves
+  vars_files:
+    - secrets.yml
+  #strategy: free
   roles:
     - role: dns_slave
       tags: dns_slave
 
-- name: Prometheus playbook
-  hosts: group_prometheus
+- hosts: group_prometheus
+  vars_files:
+    - secrets.yml
+  #strategy: free
   roles:
     - role: prometheus
       tags: prometheus
 
-- name: Proxmox playbook
-  hosts: proxmox_nodes
+- hosts: proxmox_nodes
+  vars_files:
+    - secrets.yml
+  #strategy: free
   roles:
     - role: proxmox
       tags: proxmox
