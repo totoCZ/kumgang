@@ -1,3 +1,5 @@
+proxmox ansible_host=172.16.32.6
+
 [slaves]
 burger ansible_host=172.16.32.1
 demon ansible_host=172.16.32.3

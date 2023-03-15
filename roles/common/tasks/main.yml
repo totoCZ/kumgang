@@ -6,3 +6,4 @@
 - include_tasks: mail.yml
 - include_tasks: syslog.yml
 - include_tasks: tuning.yml
+- include_tasks: ssh.yml
