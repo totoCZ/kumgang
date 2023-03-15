@@ -13,3 +13,8 @@
     owner: root
     group: root
     mode: 0644
+
+- name: Purge postfix
+  apt:
+    name: postfix
+    state: absent

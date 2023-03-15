@@ -76,7 +76,7 @@
 #   when: ansible_distribution == "Ubuntu"
 
 - name: purge snapd
-  package:
+  apt:
     name: snapd
     state: absent
   when: ansible_distribution == "Ubuntu"
@@ -97,4 +97,5 @@
     - cron
     - unattended-upgrades
     - rsyslog
+    - postfix
   when: item in ansible_facts.services.keys()

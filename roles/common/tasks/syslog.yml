@@ -40,6 +40,6 @@
         enabled: yes
 
 - name: purge rsyslog
-  package:
+  apt:
     name: rsyslog
     state: absent
