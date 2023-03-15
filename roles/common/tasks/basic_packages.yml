@@ -22,6 +22,7 @@
       - apt-transport-https
       - ncdu
       - systemd-journal-remote
+      - tmux
     state: present
 
 
