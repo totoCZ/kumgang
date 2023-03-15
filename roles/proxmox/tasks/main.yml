@@ -20,15 +20,15 @@
  #    state: started
  #    enabled: yes
 
- - name: borgbackup installed
+ - name: Install borgbackup, borgmatic, numad, and sysfsutils
    apt:
-     name: borgbackup
+     name: "{{ item }}"
      state: present
-
- - name: Borgmatic package installed
-   apt:
-     name: borgmatic
-     state: present
+   with_items:
+     - borgbackup
+     - borgmatic
+     - numad
+     - sysfsutils
 
  - name: Create /etc/borgmatic
    file:
@@ -46,21 +46,11 @@
      group: root
      mode: 0640
 
- - name: install numad
-   apt:
-     name: numad
-     state: present
-
  - name: numad started and enabled
    systemd:
      name: numad
      state: started
      enabled: yes
-
- - name: install sysfsutils
-   apt:
-     name: sysfsutils
-     state: present
 
  - name: set /sys/kernel/mm/ksm/merge_across_nodes to 0 (persistent using sysfs.d)
    copy:
