@@ -38,3 +38,8 @@
         name: systemd-journal-upload
         state: started
         enabled: yes
+
+- name: purge rsyslog
+  package:
+    name: rsyslog
+    state: absent
