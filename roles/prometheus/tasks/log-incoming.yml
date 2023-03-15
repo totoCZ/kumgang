@@ -1,8 +1,3 @@
-- name: Enable remote journal socket
-  systemd:
-    name: systemd-journal-remote.socket
-    enabled: yes
-
 - name: Override systemd-journal-remote.service
   copy:
     dest: /etc/systemd/system/systemd-journal-remote.service.d/override.conf
@@ -14,44 +9,27 @@
     group: root
     mode: 0644
 
-- name: Enable remote journal sink service
-  systemd:
-    name: systemd-journal-remote.service
-    enabled: yes
-    state: started
-  
-- name: Install loki
+- name: Install loki and promtail via apt
   apt:
-    name: loki
+    name: "{{ item }}"
     state: present
-- name: Enable loki
-  systemd:
-    name: loki
-    enabled: yes
-    state: started
-- name: Install promtail
-  apt:
-    name: promtail
-    state: present
-- name: Enable promtail
-  systemd:
-    name: promtail
-    enabled: yes
-    state: started
-
+  loop:
+    - loki
+    - promtail
+    
 - name: Configure promtail to read /var/log/journal/remote and forward it to loki
   copy:
     dest: /etc/promtail/config.yml
     src: promtail-config.yml
   notify: restart promtail
 
-- name: /var/lib/loki
+- name: Create /var/lib/loki directory
   file:
     path: /var/lib/loki
     state: directory
     owner: loki
     group: root
-    mode: 0755
+    mode: '0755'
 
 - name: Configure loki (copy)
   copy:
@@ -62,14 +40,20 @@
     mode: 0644
   notify: restart loki
 
-- name: Add promtail to systemd-journal group
+- name: Add promtail to systemd-journal and systemd-journal-remote group
   user:
     name: promtail
-    groups: systemd-journal
+    groups:
+      - systemd-journal
+      - systemd-journal-remote
     append: yes
 
-- name: Add promtail to systemd-journal-remote group
-  user:
-    name: promtail
-    groups: systemd-journal-remote
-    append: yes
+- name: Enable remote journal socket, remote journal sink service, Loki and Promtail
+  systemd:
+    name:
+      - systemd-journal-remote.socket
+      - systemd-journal-remote.service
+      - loki
+      - promtail
+    enabled: yes
+    state: started
