@@ -24,7 +24,6 @@
    apt:
      name: borgbackup
      state: present
-     update_cache: yes
 
  - name: Borgmatic package installed
    apt:
