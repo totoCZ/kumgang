@@ -57,7 +57,7 @@
     content: |
       Package: *
       Pin: release a={{ ansible_distribution_release }}-backports
-      Pin-Priority: 990
+      Pin-Priority: 500
     dest: /etc/apt/preferences.d/backports
     owner: root
     group: root
