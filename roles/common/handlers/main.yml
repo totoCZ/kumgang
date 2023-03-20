@@ -24,3 +24,5 @@
     state: reloaded
     enabled: yes
     daemon_reload: yes
+- name: update grub
+  command: update-grub
