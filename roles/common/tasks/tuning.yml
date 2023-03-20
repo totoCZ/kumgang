@@ -57,7 +57,7 @@
   lineinfile:
     path: /etc/default/grub
     regexp: '^GRUB_CMDLINE_LINUX='
-    line: 'GRUB_CMDLINE_LINUX="quiet splash mitigations=off"'
+    line: 'GRUB_CMDLINE_LINUX="quiet splash mitigations=off l1tf=off tsx=on tsx_async_abort=off"'
     state: present
   when: not ansible_virtualization_type == "lxc"
   notify: update grub
