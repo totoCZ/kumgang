@@ -23,6 +23,7 @@
       - ncdu
       - systemd-journal-remote
       - tmux
+      - systemd-cron
     state: present
 
 
