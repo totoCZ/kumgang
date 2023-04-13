@@ -42,13 +42,21 @@ scrape_configs:
       - targets:
         - '172.16.0.210:2019'
 
-  - job_name: "nodes"
+  - job_name: "eth2"
     static_configs:
       - targets: ['172.16.0.223:5054']
 
-  - job_name: "validators"
+  - job_name: "validator"
     static_configs:
       - targets: ['172.16.0.222:5064']
+
+  - job_name: "eth2"
+    static_configs:
+      - targets: ['172.16.0.223:5054']
+
+  - job_name: "rocket"
+    static_configs:
+      - targets: ['172.16.0.222:9102']
 
   - job_name: "geth"
     metrics_path: /debug/metrics/prometheus
