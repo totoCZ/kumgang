@@ -33,7 +33,7 @@ scrape_configs:
       - targets:
         - '172.16.0.209:9153'
 {% for item in groups['slaves'] | sort %}
-        - '{{ hostvars[item]['ansible_nm_toto']['ipv4']['address'] }}:9153'
+        - '{{ hostvars[item]['ansible_tailscale0']['ipv4']['address'] }}:9153'
 {% endfor %}
 
   - job_name: caddy
