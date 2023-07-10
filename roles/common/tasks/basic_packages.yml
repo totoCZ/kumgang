@@ -40,7 +40,7 @@
     content: |
       [Service]
       ExecStart=
-      ExecStart=/usr/bin/glances -s -B 0.0.0.0 --disable-autodiscover
+      ExecStart=/usr/bin/glances -s -B '::' --disable-autodiscover
     dest: /etc/systemd/system/glances.service.d/override.conf
     owner: root
     group: root
