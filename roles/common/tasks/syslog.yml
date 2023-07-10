@@ -12,7 +12,7 @@
       lineinfile:
         dest: /etc/systemd/journal-upload.conf
         regexp: '^#?URL='
-        line: 'URL=http://172.16.0.217:19532'
+        line: 'URL=http://monitoring.hetmer.net:19532'
 
     - name: override dir for systemd-journal-upload
       file:
