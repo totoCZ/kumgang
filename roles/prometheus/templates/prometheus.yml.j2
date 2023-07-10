@@ -43,11 +43,11 @@ scrape_configs:
 
   - job_name: "eth2"
     static_configs:
-      - targets: ['172.16.0.223:5054']
+      - targets: ['eth-consensus.hetmer.net:5054']
 
   - job_name: "validator"
     static_configs:
-      - targets: ['172.16.0.222:5064']
+      - targets: ['eth-validator.hetmer.net:5064']
 
   - job_name: "rocketpool"
     static_configs:
