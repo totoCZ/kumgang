@@ -1,4 +1,4 @@
-proxmox ansible_host=100.64.0.5
+proxmox ansible_host=proxmox.hetmer.net
 
 [slaves]
-burger ansible_host=100.64.0.4
+burger ansible_host=burger.hetmer.net
