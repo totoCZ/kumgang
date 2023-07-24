@@ -20,31 +20,13 @@
  #    state: started
  #    enabled: yes
 
- - name: Install borgbackup, borgmatic, numad, and sysfsutils
+ - name: Install numad, and sysfsutils
    apt:
      name: "{{ item }}"
      state: present
    with_items:
-     - borgbackup
-     - borgmatic
      - numad
      - sysfsutils
-
- - name: Create /etc/borgmatic
-   file:
-     path: /etc/borgmatic
-     state: directory
-     owner: root
-     group: root
-     mode: 0755
-
- - name: Copy /etc/borgmatic/config.yaml
-   template:
-     src: borgmatic_config.yaml.j2
-     dest: /etc/borgmatic/config.yaml
-     owner: root
-     group: root
-     mode: 0640
 
  - name: numad started and enabled
    systemd:

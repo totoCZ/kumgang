@@ -1,15 +1,14 @@
 HISTFILE=~/.zsh_history
 HISTSIZE=SAVEHIST=10000
-setopt sharehistory
+setopt sharehistory appendhistory
 
 export LS_OPTIONS='--color=auto'
+export EDITOR=micro
 eval "`dircolors`"
 alias ls='ls $LS_OPTIONS'
 alias ll='ls $LS_OPTIONS -l'
 alias l='ls $LS_OPTIONS -lA'
-
+alias history='history 1'
 alias ..="cd .."
-
-export EDITOR=micro
 
 PS1='%F{cyan}%n%f@%F{green}%m:%F{yellow}%~%f$ '

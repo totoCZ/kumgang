@@ -1,0 +1,42 @@
+ - name: Install borgbackup, borgmatic
+   apt:
+     name: "{{ item }}"
+     state: present
+   with_items:
+     - borgbackup
+     - borgmatic
+
+ - name: Create /etc/borgmatic
+   file:
+     path: /etc/borgmatic
+     state: directory
+     owner: root
+     group: root
+     mode: 0755
+
+ - name: create backup password
+   ansible.builtin.set_fact:
+     borgmatic_password: "{{ lookup('ansible.builtin.password', 'credentials/' + inventory_hostname + '/borgmatic') }}"
+
+ - name: Copy /etc/borgmatic/config.yaml
+   template:
+     src: borgmatic_config.yaml.j2
+     dest: /etc/borgmatic/config.yaml
+     owner: root
+     group: root
+     mode: 0640
+
+
+ - name: Ensure .ssh directory exists
+   file: 
+    dest: /root/.ssh
+    mode: 0700 
+    state: directory
+
+ - name: Copy /root/.ssh/id_backups
+   template:
+     src: backups_key.j2
+     dest: /root/.ssh/id_backups
+     owner: root
+     group: root
+     mode: 0600

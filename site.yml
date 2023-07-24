@@ -5,6 +5,8 @@
   roles:
   - role: common
     tags: common
+  - role: backup
+    tags: backup
     
 - hosts: proxmox_proxmox_qemu
   vars_files:

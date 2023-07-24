@@ -1,3 +1,4 @@
+credentials/
 secrets.yml
 proxmox.yml
 .DS_Store
