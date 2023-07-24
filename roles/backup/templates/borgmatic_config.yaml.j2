@@ -31,6 +31,9 @@ retention:
 consistency:
   checks:
     - name: repository
+      frequency: 2 weeks
+    - name: archives
+      frequency: 1 month
 hooks:
   before_backup:
     - borgmatic rcreate --encryption repokey-blake2
