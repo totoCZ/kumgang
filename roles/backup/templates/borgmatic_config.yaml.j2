@@ -23,7 +23,7 @@ location:
     - /tmp
 storage:
   encryption_passphrase: {{ borgmatic_password }}
-  ssh_command: ssh -i id_backups -p 23 -o StrictHostKeyChecking=no
+  ssh_command: ssh -i /root/.ssh/id_backups -p 23 -o StrictHostKeyChecking=no
 retention:
   keep_daily: 7
   keep_weekly: 4
