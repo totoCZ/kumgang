@@ -44,13 +44,25 @@
 #    mode: 0644
 #  notify: restart glances
 
-- name: Enable backports
+- name: Enable backports debian
   apt_repository:
     repo: deb http://deb.debian.org/debian {{ ansible_distribution_release }}-backports main contrib non-free
     state: present
   when: ansible_distribution == "Debian"
 
-- name: Pin backports
+- name: Pin backports debian
+  copy:
+    content: |
+      Package: *
+      Pin: release n={{ ansible_distribution_release }}-backports
+      Pin-Priority: 500
+    dest: /etc/apt/preferences.d/backports
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_distribution == "Debian"
+
+- name: Pin backports ubuntu
   copy:
     content: |
       Package: *
@@ -60,6 +72,8 @@
     owner: root
     group: root
     mode: 0644
+  when: ansible_distribution == "Ubuntu"
+
 
 # - name: Remove lxd, snapd, core20
 #   community.general.snap:
