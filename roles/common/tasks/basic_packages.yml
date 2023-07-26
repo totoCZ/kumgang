@@ -4,7 +4,6 @@
       - curl
       - btop
       - htop
-      - glances
       - mtr-tiny
       - msmtp
       - msmtp-mta
@@ -26,25 +25,25 @@
     state: present
 
 
-- name: override dir for glances
-  file:
-    path: /etc/systemd/system/glances.service.d
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
+#- name: override dir for glances
+#  file:
+#    path: /etc/systemd/system/glances.service.d
+#    state: directory
+#    owner: root
+#    group: root
+#    mode: 0755
 
-- name: override glances
-  copy:
-    content: |
-      [Service]
-      ExecStart=
-      ExecStart=/usr/bin/glances -s -B '::' --disable-autodiscover
-    dest: /etc/systemd/system/glances.service.d/override.conf
-    owner: root
-    group: root
-    mode: 0644
-  notify: restart glances
+#- name: override glances
+#  copy:
+#    content: |
+#      [Service]
+#      ExecStart=
+#      ExecStart=/usr/bin/glances -s -B '::' --disable-autodiscover
+#    dest: /etc/systemd/system/glances.service.d/override.conf
+#    owner: root
+#    group: root
+#    mode: 0644
+#  notify: restart glances
 
 - name: Enable backports
   apt_repository:
