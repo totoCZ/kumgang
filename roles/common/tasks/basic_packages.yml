@@ -2,7 +2,6 @@
   apt:
     name:
       - curl
-      - wget
       - btop
       - htop
       - glances

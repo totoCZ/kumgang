@@ -9,6 +9,7 @@ alias ls='ls $LS_OPTIONS'
 alias ll='ls $LS_OPTIONS -l'
 alias l='ls $LS_OPTIONS -lA'
 alias history='history 1'
-alias ..="cd .."
+alias ..='cd ..'
+alias wget='curl -O'
 
 PS1='%F{cyan}%n%f@%F{green}%m:%F{yellow}%~%f$ '
