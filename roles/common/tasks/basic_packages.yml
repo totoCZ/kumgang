@@ -7,7 +7,6 @@
       - mtr-tiny
       - msmtp
       - msmtp-mta
-      - zsh
       - prometheus-node-exporter
       - micro
       - vnstat
@@ -21,6 +20,8 @@
       - systemd-journal-remote
       - tmux
       - systemd-cron
+      - tldr
+      - fish
     state: present
 
 

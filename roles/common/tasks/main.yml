@@ -2,7 +2,7 @@
   service_facts:
 - include_tasks: netdata.yml
 - include_tasks: basic_packages.yml
-- include_tasks: zsh.yml
+- include_tasks: shell.yml
 - include_tasks: mail.yml
 - include_tasks: syslog.yml
 - include_tasks: tuning.yml
