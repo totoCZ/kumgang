@@ -1,3 +1,8 @@
+- name: Apt electrolux
+  apt:
+    autoremove: yes
+    purge: yes
+
 - name: Install /etc/udev/rules.d/60-scheduler.rules
   copy:
     content: |
