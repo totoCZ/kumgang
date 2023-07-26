@@ -11,5 +11,6 @@ alias l='ls $LS_OPTIONS -lA'
 alias history='history 1'
 alias ..='cd ..'
 alias wget='curl -O'
+alias nano='micro'
 
 PS1='%F{cyan}%n%f@%F{green}%m:%F{yellow}%~%f$ '

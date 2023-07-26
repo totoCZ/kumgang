@@ -9,7 +9,6 @@
       - msmtp-mta
       - zsh
       - prometheus-node-exporter
-      - nano
       - micro
       - vnstat
       - unzip
