@@ -6,6 +6,8 @@
 - name: micro config dir
   file:
     path: /home/toto/.config/micro
+    owner: toto
+    group: toto
     state: directory
 
 

@@ -31,8 +31,8 @@
   apt:
     name:
       - systemd-resolved
-    ignore_errors: true
     state: present
+  ignore_errors: true
 
 #- name: override dir for glances
 #  file:

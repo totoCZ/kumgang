@@ -24,6 +24,8 @@
 - name: fish config dir
   file:
     path: /home/toto/.config/fish
+    owner: toto
+    group: toto
     state: directory
 
 - name: copy file /root/.config/fish/config.fish

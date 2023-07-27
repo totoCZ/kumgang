@@ -1,7 +1,7 @@
 - name: add user coredns
   user:
     name: coredns
-    shell: /usr/bin/zsh
+    shell: /usr/bin/bash
     state: present
 
 - name: ensure .ssh exists in coredns home
