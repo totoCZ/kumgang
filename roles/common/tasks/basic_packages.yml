@@ -120,5 +120,5 @@
     - unattended-upgrades
     - rsyslog
     - postfix
-    - motd-news
+    - motd-news.timer
   when: item in ansible_facts.services.keys()
