@@ -24,6 +24,7 @@
       - fish
       - unattended-upgrades
       - systemd-resolved
+      - nano
     state: present
 
 
@@ -113,4 +114,5 @@
     - unattended-upgrades
     - rsyslog
     - postfix
+    - motd-news
   when: item in ansible_facts.services.keys()

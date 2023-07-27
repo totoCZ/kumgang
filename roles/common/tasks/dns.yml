@@ -1,20 +1,29 @@
-- name: copy file /etc/systemd/resolved.conf
-  copy:
-    src: resolved.conf
-    dest: /etc/systemd/resolved.conf
-    owner: root
-    group: root
-    mode: 0644
-  when: ansible_host != "mail"
+- name: search domain
+  lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^Domain='
+    line: 'Domain=hetmer.net'
+    state: present
 
-# ensure DNSStubListener=no is disabled
-- name: disable DNSStubListener mail
+- name: resolve fallback on google
+  lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^FallbackDNS='
+    line: 'FallbackDNS=2001:4860:4860::8888#dns.google 2001:4860:4860::8844#dns.google 8.8.8.8#dns.google 8.8.4.4#dns.google'
+    state: present
+
+- name: disable DNSStubListener on mail
   lineinfile:
     path: /etc/systemd/resolved.conf
     regexp: '^DNSStubListener='
     line: 'DNSStubListener=no'
     state: present
-    backup: yes
   when: ansible_host == "mail"
 
-    
+- name: resolve mail on local (dnsbl hack)
+  lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^DNS='
+    line: 'DNS=::1'
+    state: present
+  when: ansible_host == "mail"

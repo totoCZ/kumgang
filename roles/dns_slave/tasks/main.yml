@@ -61,7 +61,6 @@
     regexp: '^DNSStubListener='
     line: 'DNSStubListener=no'
     state: present
-    backup: yes
   notify: restart systemd-resolved
 
 - name: Install CoreDNS systemd service
