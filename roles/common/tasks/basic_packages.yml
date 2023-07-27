@@ -22,6 +22,8 @@
       - systemd-cron
       - tldr
       - fish
+      - unattended-upgrades
+      - systemd-resolved
     state: present
 
 

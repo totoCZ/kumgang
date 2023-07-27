@@ -62,7 +62,6 @@
     line: 'DNSStubListener=no'
     state: present
     backup: yes
-  ignore_errors: true
   notify: restart systemd-resolved
 
 - name: Install CoreDNS systemd service
