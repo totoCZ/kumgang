@@ -1,10 +1,11 @@
 - name: Populate service facts
   service_facts:
-- include_tasks: netdata.yml
-- include_tasks: basic_packages.yml
-- include_tasks: shell.yml
-- include_tasks: mail.yml
-- include_tasks: syslog.yml
-- include_tasks: tuning.yml
-- include_tasks: ssh.yml
-- include_tasks: editor.yml
+- import_tasks: netdata.yml
+- import_tasks: basic_packages.yml
+- import_tasks: shell.yml
+- import_tasks: mail.yml
+- import_tasks: syslog.yml
+- import_tasks: tuning.yml
+- import_tasks: ssh.yml
+- import_tasks: editor.yml
+- import_tasks: motd.yml

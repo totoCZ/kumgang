@@ -1,0 +1,41 @@
+  # clean the dust
+- name: removing bogus motd
+  file:
+    path: "{{item}}"
+    mode: a-x
+  with_items:
+    - /etc/update-motd.d/10-help-text
+    - /etc/update-motd.d/50-motd-news
+    - /etc/update-motd.d/91-contract-ua-esm-status
+    - /etc/update-motd.d/95-hwe-eol
+  when: ansible_distribution == "Ubuntu"
+ #   - /etc/update-motd.d/97-overlayroot
+ # not in gcp
+
+- name: removing bogus motd deb
+  file:
+    path: "{{item}}"
+    mode: a-x
+  with_items:
+    - /etc/update-motd.d/10-uname
+  when: ansible_distribution == "Debian"
+
+- name: debian motd header 00
+  copy:
+    src: motd-00
+    dest: /etc/update-motd.d/00-header
+    mode: a+x
+  when: ansible_distribution == "Debian"
+
+- name: debian motd header 10
+  copy:
+    src: motd-10
+    dest: /etc/update-motd.d/10-sysinfo
+    mode: a+x
+  when: ansible_distribution == "Debian"
+
+- name: debian motd header rm
+  copy:
+    src: motd
+    dest: /etc/motd
+  when: ansible_distribution == "Debian"
