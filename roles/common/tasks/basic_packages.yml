@@ -23,10 +23,16 @@
       - tldr
       - fish
       - unattended-upgrades
-      - systemd-resolved
       - nano
     state: present
 
+# temp not avail in lts
+- name: Install resolved
+  apt:
+    name:
+      - systemd-resolved
+    ignore_errors: true
+    state: present
 
 #- name: override dir for glances
 #  file:
