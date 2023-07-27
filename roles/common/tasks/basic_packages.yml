@@ -47,7 +47,7 @@
 
 - name: Enable backports debian
   apt_repository:
-    repo: deb http://deb.debian.org/debian {{ ansible_distribution_release }}-backports main contrib non-free
+    repo: deb http://deb.debian.org/debian {{ ansible_distribution_release }}-backports main contrib non-free non-free-firmware
     state: present
   when: ansible_distribution == "Debian"
 

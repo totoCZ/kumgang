@@ -1,4 +1,5 @@
-proxmox ansible_host=proxmox.hetmer.net
+proxmox
 
 [slaves]
-burger ansible_host=burger.hetmer.net
+burger
+demon

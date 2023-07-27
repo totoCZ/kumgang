@@ -3,6 +3,11 @@
     path: /etc/cron.daily/netdata-updater
     state: absent
 
+- name: netdata dir
+  file:
+    path: /etc/netdata
+    state: directory
+
 - name: Configure netdata on slaves
   copy:
     src: netdata_slave.conf
