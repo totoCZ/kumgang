@@ -16,6 +16,32 @@
     groups: adm
     append: yes
 
+- name: fish config dir
+  file:
+    path: /root/.config/fish
+    state: directory
+
+- name: fish config dir
+  file:
+    path: /home/toto/.config/fish
+    state: directory
+
+- name: copy file /root/.config/fish/config.fish
+  copy:
+    src: config.fish
+    dest: /root/.config/fish/config.fish
+    owner: root
+    group: root
+    mode: 0644
+
+- name: copy file /home/toto/.config/fish/config.fish
+  copy:
+    src: config.fish
+    dest: /home/toto/.config/fish/config.fish
+    owner: toto
+    group: toto
+    mode: 0644
+
 #- name: copy file /root/.zshrc
 #  copy:
 #    src: zshrc
