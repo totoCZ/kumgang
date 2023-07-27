@@ -1,0 +1,26 @@
+- name: micro config dir
+  file:
+    path: /root/.config/micro
+    state: directory
+
+- name: micro config dir
+  file:
+    path: /home/toto/.config/micro
+    state: directory
+
+
+- name: copy file /root/.config/micro/bindings.json
+  copy:
+    src: micro_bindings.json
+    dest: /root/.config/micro/bindings.json
+    owner: root
+    group: root
+    mode: 0644
+
+- name: copy file /home/toto/.config/micro/bindings.json
+  copy:
+    src: micro_bindings.json
+    dest: /home/toto/.config/micro/bindings.json
+    owner: toto
+    group: toto
+    mode: 0644
