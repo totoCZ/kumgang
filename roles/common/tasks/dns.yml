@@ -1,8 +1,8 @@
 - name: search domain
   lineinfile:
     path: /etc/systemd/resolved.conf
-    regexp: '^Domain='
-    line: 'Domain=hetmer.net'
+    regexp: '^Domains='
+    line: 'Domains=hetmer.net'
     state: present
 
 - name: resolve fallback on google
