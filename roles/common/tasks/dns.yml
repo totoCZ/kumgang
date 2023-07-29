@@ -13,6 +13,21 @@
     state: present
   when: ansible_host != "mail"
 
+- name: dot on
+  lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^DNSOverTLS='
+    line: 'DNSOverTLS=yes'
+    state: present
+  when: ansible_host != "mail"
+
+- name: dnssec on
+  lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^DNSSEC='
+    line: 'DNSSEC=yes'
+    state: present
+
 - name: resolve fallback on cf
   lineinfile:
     path: /etc/systemd/resolved.conf
