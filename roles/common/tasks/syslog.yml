@@ -27,6 +27,7 @@
         content: |
           [Service]
           Restart=always
+          RestartSec=10
         dest: /etc/systemd/system/systemd-journal-upload.service.d/override.conf
         owner: root
         group: root
