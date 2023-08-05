@@ -20,7 +20,7 @@
     daemon_reload: yes
 - name: reload sshd
   systemd:
-    name: sshd
+    name: ssh
     state: reloaded
     enabled: yes
     daemon_reload: yes
