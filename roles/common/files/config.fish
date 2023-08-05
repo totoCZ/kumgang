@@ -12,5 +12,5 @@ if status is-interactive
     end
     abbr -a !! --position anywhere --function last_history_item
 
-    printf '\eP$f{"hook": "SourcedRcFileForWarp", "value": { "shell": "fish"}}\x9c'
+    #printf '\eP$f{"hook": "SourcedRcFileForWarp", "value": { "shell": "fish"}}\x9c'
 end
