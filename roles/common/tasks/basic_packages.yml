@@ -23,7 +23,6 @@
       - tldr
       - fish
       - unattended-upgrades
-      - nano
     state: present
 
 # temp not avail in lts
