@@ -5,6 +5,7 @@
     line: "PermitRootLogin no"
     state: present
   notify: reload sshd
+
 - name: Ensure password auth disabled
   lineinfile:
     path: /etc/ssh/sshd_config
@@ -13,8 +14,54 @@
     state: present
   notify: reload sshd
 
-- name: Set authorized key taken from file
-  ansible.posix.authorized_key:
-    user: toto
+- name: kex
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^KexAlgorithms"
+    line: "KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256"
     state: present
-    key: "{{ lookup('file', '/Users/toto/.ssh/id_ed25519.pub') }}"
+  notify: reload sshd
+
+- name: ciphers
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^Ciphers"
+    line: "Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr"
+    state: present
+  notify: reload sshd
+
+- name: macs
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^MACs"
+    line: "MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com"
+    state: present
+  notify: reload sshd
+
+- name: rsa off
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^HostKey /etc/ssh/ssh_host_rsa_key"
+    state: absent
+  notify: reload sshd
+
+- name: dsa off
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^HostKey /etc/ssh/ssh_host_dsa_key"
+    state: absent
+  notify: reload sshd
+
+- name: ed25519
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^HostKey /etc/ssh/ssh_host_ed25519_key"
+    line: "HostKey /etc/ssh/ssh_host_ed25519_key"
+    state: present
+  notify: reload sshd
+
+#- name: Set authorized key taken from file
+#  ansible.posix.authorized_key:
+#    user: toto
+#    state: present
+#    key: "{{ lookup('file', '/Users/toto/.ssh/id_ed25519.pub') }}"
