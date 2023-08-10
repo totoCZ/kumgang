@@ -13,4 +13,4 @@
     line: 'ARGS="--storage.tsdb.retention.time=30d"'
   notify: reload prometheus
 - include_tasks: log-incoming.yml
-- include_tasks: netdata.yml
+#- include_tasks: netdata.yml
