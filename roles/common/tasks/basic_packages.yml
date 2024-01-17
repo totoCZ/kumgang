@@ -25,7 +25,7 @@
       - unattended-upgrades
       - chkrootkit
       - needrestart
-      - logwatch
+      - logcheck
     state: present
 
 # temp not avail in lts
