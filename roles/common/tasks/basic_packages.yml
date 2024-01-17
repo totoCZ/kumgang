@@ -23,7 +23,6 @@
       - tldr
       - fish
       - unattended-upgrades
-      - aide
       - chkrootkit
       - needrestart
     state: present
