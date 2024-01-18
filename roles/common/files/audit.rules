@@ -62,6 +62,8 @@
 
 # spam
 -a always,exclude -F msgtype=NETFILTER_CFG
+-a always,exclude -F msgtype=SERVICE_START
+-a always,exclude -F msgtype=SERVICE_STOP
 
 ## High Volume Event Filter (especially on Linux Workstations)
 -a never,exit -F arch=b64 -F dir=/dev/shm -k sharedmemaccess
@@ -381,7 +383,7 @@
 
 ### Unsuccessful Modification
 -a always,exit -F arch=b64 -S rename -S renameat -S truncate -S chmod -S setxattr -S lsetxattr -S removexattr -S lremovexattr -F exit=-EACCES -k file_modification
--a always,exit -F arch=b64 -S rename -S renameat -S truncate -S chmod
+-a always,exit -F arch=b64 -S rename -S renameat -S truncate -S chmod -S setxattr -S lsetxattr -S removexattr -S lremovexattr -F exit=-EPERM -k file_modification
 
 ## 32bit API Exploitation
 ### If you are on a 64 bit platform, everything _should_ be running
