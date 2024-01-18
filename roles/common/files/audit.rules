@@ -351,7 +351,7 @@
 
 ## Process ID change (switching accounts) applications
 -w /bin/su -p x -k priv_esc
--w /usr/bin/sudo -p x -k priv_esc
+#-w /usr/bin/sudo -p x -k priv_esc
 
 ## Power state
 -w /sbin/shutdown -p x -k power
