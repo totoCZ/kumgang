@@ -11,3 +11,4 @@
 - import_tasks: motd.yml
 - import_tasks: ntp.yml
 - import_tasks: dns.yml
+- import_tasks: audit.yml

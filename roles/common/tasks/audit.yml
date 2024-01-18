@@ -1,0 +1,15 @@
+- name: install auditd
+  apt:
+    name: auditd
+    state: present
+  when: inventory_hostname != "demon"
+
+- name: copy file /etc/audit/audit.rules
+  copy:
+    src: audit.rules
+    dest: /etc/audit/audit.rules
+    owner: root
+    group: root
+    mode: 0644
+  when: inventory_hostname != "demon"
+  notify: restart auditd
