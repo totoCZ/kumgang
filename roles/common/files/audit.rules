@@ -58,15 +58,6 @@
 
 # spam
 -a always,exclude -F msgtype=NETFILTER_CFG
--a exclude,always -F msgtype=MAC_IPSEC_EVENT
--a exclude,always -F msgtype=USER_AUTH
--a exclude,always -F msgtype=USER_ACCT
--a exclude,always -F msgtype=CRED_REFR
--a exclude,always -F msgtype=CRED_DISP
--a exclude,always -F msgtype=CRED_ACQ
--a exclude,always -F msgtype=USER_START
--a exclude,always -F msgtype=USER_CMD
--a exclude,always -F msgtype=USER_END
 -a exclude,always -F msgtype=SERVICE_START
 -a exclude,always -F msgtype=SERVICE_STOP
 
@@ -227,7 +218,7 @@
 
 ## Process ID change (switching accounts) applications
 -w /bin/su -p x -k priv_esc
-#-w /usr/bin/sudo -p x -k priv_esc
+-w /usr/bin/sudo -p x -k priv_esc
 
 ## Power state
 -w /sbin/shutdown -p x -k power
@@ -303,7 +294,7 @@
 ## Sbin suspicious activity
 #-w /sbin/iptables -p x -k sbin_susp
 #-w /sbin/ip6tables -p x -k sbin_susp
-#-w /sbin/ifconfig -p x -k sbin_susp
+-w /sbin/ifconfig -p x -k sbin_susp
 -w /usr/sbin/arptables -p x -k sbin_susp
 #-w /usr/sbin/ebtables -p x -k sbin_susp
 #-w /sbin/xtables-nft-multi -p x -k sbin_susp
