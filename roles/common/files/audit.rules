@@ -10,3 +10,441 @@
 
 ## Set failure mode to syslog
 -f 1
+
+## This suppresses syscall auditing for all tasks started
+## with this rule in effect.  Remove it if you need syscall
+## auditing.
+-a task,never
+
+## Make the loginuid immutable. This prevents tampering with the auid.
+--loginuid-immutable
+
+## This rule will cause auditctl to continue loading rules when it runs
+## across an unsupported field or a rule with a syntax error however it will
+## report an error at exit. The normal action is to report the line and
+## issue with the rule and exit immediately with an error to get the admin's
+## attention to fix the rules.
+
+-c
+
+## This is for don't audit rules. We put these early because audit
+### is a first match wins system. Uncomment the rules you want.
+
+## Cron jobs fill the logs with stuff we normally don't want
+-a never,user -F subj_type=crond_t
+-a never,exit -F subj_type=crond_t
+
+## This prevents chrony from overwhelming the logs
+#-a never,exit -F arch=x86_64 -S adjtimex -F auid=unset -F uid=chrony -F subj_type=chronyd_t
+
+### This is not very interesting and wastes a lot of space if
+### the server is public facing
+-a always,exclude -F msgtype=CRYPTO_KEY_USER
+
+## If you are on a 64 bit platform, everything _should_ be running
+## in 64 bit mode. This rule will detect any use of the 32 bit syscalls
+## because this might be a sign of someone exploiting a hole in the 32
+## bit API.
+-a always,exit -F arch=b32 -S all -F key=32bit-abi
+
+# This rule suppresses events that originate on the below file systems.
+# Typically you would use this in conjunction with rules to monitor
+# kernel modules. The filesystem listed are known to cause hundreds of
+# path records during kernel module load. As an aside, if you do see the
+# tracefs or debugfs module load and this is a production system, you really
+# should look into why its getting loaded and prevent it if possible.
+-a never,filesystem -F fstype=tracefs
+-a never,filesystem -F fstype=debugfs
+
+# spam
+-a always,exclude -F msgtype=NETFILTER_CFG
+
+## Ignore current working directory records
+-a always,exclude -F msgtype=CWD
+
+## High Volume Event Filter (especially on Linux Workstations)
+-a never,exit -F arch=b64 -F dir=/dev/shm -k sharedmemaccess
+-a never,exit -F arch=b64 -F dir=/var/lock/lvm -k locklvm
+
+## Use these rules if you want to log container events
+## watch for container creation
+-a always,exit -F arch=b32 -S clone -F a0&0x7C020000 -F key=container-create
+-a always,exit -F arch=b64 -S clone -F a0&0x7C020000 -F key=container-create
+
+## watch for containers that may change their configuration
+-a always,exit -F arch=b32 -S unshare,setns -F key=container-config
+-a always,exit -F arch=b64 -S unshare,setns -F key=container-config
+
+## These rules watch for code injection by the ptrace facility.
+## This could indicate someone trying to do something bad or
+## just debugging
+
+#-a always,exit -F arch=b32 -S ptrace -F key=tracing
+-a always,exit -F arch=b64 -S ptrace -F key=tracing
+-a always,exit -F arch=b32 -S ptrace -F a0=0x4 -F key=code-injection
+-a always,exit -F arch=b64 -S ptrace -F a0=0x4 -F key=code-injection
+-a always,exit -F arch=b32 -S ptrace -F a0=0x5 -F key=data-injection
+-a always,exit -F arch=b64 -S ptrace -F a0=0x5 -F key=data-injection
+-a always,exit -F arch=b32 -S ptrace -F a0=0x6 -F key=register-injection
+-a always,exit -F arch=b64 -S ptrace -F a0=0x6 -F key=register-injection
+
+## These rules watch for kernel module insertion. By monitoring
+## the syscall, we do not need any watches on programs.
+-a always,exit -F arch=b32 -S init_module,finit_module -F key=module-load
+-a always,exit -F arch=b64 -S init_module,finit_module -F key=module-load
+-a always,exit -F arch=b32 -S delete_module -F key=module-unload
+-a always,exit -F arch=b64 -S delete_module -F key=module-unload
+
+############
+############
+
+## Audit 1, 1(d) Changes in user authenticators.
+## Covered by patches to libpam, passwd, and shadow-utils
+## Might also want to watch these files for changes
+-w /etc/group -p wa -k auth
+-w /etc/passwd -p wa -k auth
+-w /etc/gshadow -p wa -k auth
+-w /etc/shadow -p wa -k auth
+-w /etc/security/opasswd -p wa -k auth
+
+## Audit 1, 2 Audit Trail Protection. The contents of audit trails
+## shall be protected against unauthorized access, modification,
+## or deletion.
+## This should be covered by file permissions, but we can watch it
+## to see any activity
+-a always,exit -F path=/usr/sbin/ausearch -F perm=x -F key=10.2.3-access-audit-trail
+-a always,exit -F path=/usr/sbin/aureport -F perm=x -F key=10.2.3-access-audit-trail
+-a always,exit -F path=/usr/sbin/aulast -F perm=x -F key=10.2.3-access-audit-trail
+-a always,exit -F path=/usr/sbin/aulastlogin -F perm=x -F key=10.2.3-access-audit-trail
+-a always,exit -F path=/usr/sbin/auvirt -F perm=x -F key=10.2.3-access-audit-trail
+
+## Audit the audit logs
+### Successful and unsuccessful attempts to read information from the audit records
+-w /var/log/audit/ -p wra -k auditlog
+-w /var/audit/ -p wra -k auditlog
+
+## Auditd configuration
+### Modifications to audit configuration that occur while the audit collection functions are operating
+-w /etc/audit/ -p wa -k auditconfig
+-w /etc/libaudit.conf -p wa -k auditconfig
+-w /etc/audisp/ -p wa -k audispconfig
+
+## Monitor for use of audit management tools
+-w /sbin/auditctl -p x -k audittools
+-w /sbin/auditd -p x -k audittools
+-w /usr/sbin/auditd -p x -k audittools
+-w /usr/sbin/augenrules -p x -k audittools
+
+
+## Watch for configuration changes to privilege escalation.
+-a always,exit -F path=/etc/sudoers -F perm=wa -F key=10.2.2-priv-config-changes
+-a always,exit -F dir=/etc/sudoers.d/ -F perm=wa -F key=10.2.2-priv-config-changes
+
+
+## 10.2.5.b All elevation of privileges is logged
+-a always,exit -F arch=b64 -S setuid -F a0=0 -F exe=/usr/bin/su -F key=10.2.5.b-elevated-privs-session
+-a always,exit -F arch=b32 -S setuid -F a0=0 -F exe=/usr/bin/su -F key=10.2.5.b-elevated-privs-session
+-a always,exit -F arch=b64 -S setresuid -F a0=0 -F exe=/usr/bin/sudo -F key=10.2.5.b-elevated-privs-session
+-a always,exit -F arch=b32 -S setresuid -F a0=0 -F exe=/usr/bin/sudo -F key=10.2.5.b-elevated-privs-session
+-a always,exit -F arch=b64 -S execve -C uid!=euid -F euid=0 -F key=10.2.5.b-elevated-privs-setuid
+-a always,exit -F arch=b32 -S execve -C uid!=euid -F euid=0 -F key=10.2.5.b-elevated-privs-setuid
+
+
+## 10.2.5.c All changes, additions, or deletions to any account are logged
+## This is implicitly covered by shadow-utils. We will place some rules
+## in case someone tries to hand edit the trusted databases
+-a always,exit -F path=/etc/group -F perm=wa -F key=10.2.5.c-accounts
+-a always,exit -F path=/etc/passwd -F perm=wa -F key=10.2.5.c-accounts
+-a always,exit -F path=/etc/gshadow -F perm=wa -F key=10.2.5.c-accounts
+-a always,exit -F path=/etc/shadow -F perm=wa -F key=10.2.5.c-accounts
+-a always,exit -F path=/etc/security/opasswd -F perm=wa -F key=10.2.5.c-accounts
+
+
+## Use of special rights for config changes. This would be use of setuid
+## programs that relate to user accts. This is not all setuid apps because
+## requirements are only for ones that affect system configuration.
+-a always,exit -F path=/usr/sbin/unix_chkpwd -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F path=/usr/sbin/usernetctl -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F path=/usr/sbin/userhelper -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F path=/usr/sbin/seunshare -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F path=/usr/bin/mount -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F path=/usr/bin/newgrp -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F path=/usr/bin/newuidmap -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F path=/usr/bin/gpasswd -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F path=/usr/bin/newgidmap -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F path=/usr/bin/umount -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F path=/usr/bin/crontab -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F path=/usr/bin/at -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F path=/usr/sbin/grub2-set-bootflag -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+
+## Attempts to Alter Process and Session Initiation Information
+-a always,exit -F path=/var/run/utmp -F perm=wa -F auid>=1000 -F auid!=unset -F key=session
+-a always,exit -F path=/var/log/btmp -F perm=wa -F auid>=1000 -F auid!=unset -F key=session
+-a always,exit -F path=/var/log/wtmp -F perm=wa -F auid>=1000 -F auid!=unset -F key=session
+
+## Audit 1, 1(c) Successful and unsuccessful accesses to
+## security-relevant objects and directories, including
+## creation, open, close, modification, and deletion.
+
+## unsuccessful creation
+-a always,exit -F arch=b32 -S creat,link,mknod,mkdir,symlink,mknodat,linkat,symlinkat -F exit=-EACCES -F key=creation
+-a always,exit -F arch=b64 -S mkdir,creat,link,symlink,mknod,mknodat,linkat,symlinkat -F exit=-EACCES -F key=creation
+-a always,exit -F arch=b32 -S link,mkdir,symlink,mkdirat -F exit=-EPERM -F key=creation
+-a always,exit -F arch=b64 -S mkdir,link,symlink,mkdirat -F exit=-EPERM -F key=creation
+
+## unsuccessful open
+-a always,exit -F arch=b32 -S open,openat,openat2,open_by_handle_at -F exit=-EACCES -F key=open
+-a always,exit -F arch=b64 -S open,openat,openat2,open_by_handle_at -F exit=-EACCES -F key=open
+-a always,exit -F arch=b32 -S open,openat,openat2,open_by_handle_at -F exit=-EPERM -F key=open
+-a always,exit -F arch=b64 -S open,openat,openat2,open_by_handle_at -F exit=-EPERM -F key=open
+
+## unsuccessful close
+-a always,exit -F arch=b32 -S close -F exit=-EIO -F key=close
+-a always,exit -F arch=b64 -S close -F exit=-EIO -F key=close
+
+## unsuccessful modifications
+-a always,exit -F arch=b32 -S rename -S renameat -S truncate -S chmod -S setxattr -S lsetxattr -S removexattr -S lremovexattr -F exit=-EACCES -F key=mods
+-a always,exit -F arch=b64 -S rename -S renameat -S truncate -S chmod -S setxattr -S lsetxattr -S removexattr -S lremovexattr -F exit=-EACCES -F key=mods
+-a always,exit -F arch=b32 -S rename -S renameat -S truncate -S chmod -S setxattr -S lsetxattr -S removexattr -S lremovexattr -F exit=-EPERM -F key=mods
+-a always,exit -F arch=b64 -S rename -S renameat -S truncate -S chmod -S setxattr -S lsetxattr -S removexattr -S lremovexattr -F exit=-EPERM -F key=mods
+
+## unsuccessful deletion
+-a always,exit -F arch=b32 -S unlink,rmdir,unlinkat -F exit=-EACCES -F key=delete
+-a always,exit -F arch=b64 -S rmdir,unlink,unlinkat -F exit=-EACCES -F key=delete
+-a always,exit -F arch=b32 -S unlink,rmdir,unlinkat -F exit=-EPERM -F key=delete
+-a always,exit -F arch=b64 -S rmdir,unlink,unlinkat -F exit=-EPERM -F key=delete
+
+## Kernel parameters
+-w /etc/sysctl.conf -p wa -k sysctl
+-w /etc/sysctl.d -p wa -k sysctl
+
+## Kernel module loading and unloading
+-a always,exit -F perm=x -F auid!=-1 -F path=/sbin/insmod -k modules
+-a always,exit -F perm=x -F auid!=-1 -F path=/sbin/modprobe -k modules
+-a always,exit -F perm=x -F auid!=-1 -F path=/sbin/rmmod -k modules
+-a always,exit -F arch=b64 -S finit_module -S init_module -S delete_module -F auid!=-1 -k modules
+
+## Modprobe configuration
+-w /etc/modprobe.conf -p wa -k modprobe
+-w /etc/modprobe.d -p wa -k modprobe
+
+## KExec usage (all actions)
+-a always,exit -F arch=b64 -S kexec_load -k KEXEC
+
+## Special files
+-a always,exit -F arch=b64 -S mknod -S mknodat -k specialfiles
+
+## Mount operations (only attributable)
+-a always,exit -F arch=b64 -S mount -S umount2 -F auid!=-1 -k mount
+
+### NFS mount
+-a always,exit -F path=/sbin/mount.nfs -F perm=x -F auid>=500 -F auid!=4294967295 -k T1078_Valid_Accounts
+-a always,exit -F path=/usr/sbin/mount.nfs -F perm=x -F auid>=500 -F auid!=4294967295 -k T1078_Valid_Accounts
+
+## Change swap (only attributable)
+-a always,exit -F arch=b64 -S swapon -S swapoff -F auid!=-1 -k swap
+
+
+## Cron configuration & scheduled jobs
+-w /etc/cron.allow -p wa -k cron
+-w /etc/cron.deny -p wa -k cron
+-w /etc/cron.d/ -p wa -k cron
+-w /etc/cron.daily/ -p wa -k cron
+-w /etc/cron.hourly/ -p wa -k cron
+-w /etc/cron.monthly/ -p wa -k cron
+-w /etc/cron.weekly/ -p wa -k cron
+-w /etc/crontab -p wa -k cron
+-w /var/spool/cron/ -p wa -k cron
+
+## Tools to change group identifiers
+-w /usr/sbin/groupadd -p x -k group_modification
+-w /usr/sbin/groupmod -p x -k group_modification
+-w /usr/sbin/addgroup -p x -k group_modification
+-w /usr/sbin/useradd -p x -k user_modification
+-w /usr/sbin/userdel -p x -k user_modification
+-w /usr/sbin/usermod -p x -k user_modification
+-w /usr/sbin/adduser -p x -k user_modification
+
+
+## Login configuration and information
+-w /etc/login.defs -p wa -k login
+-w /etc/securetty -p wa -k login
+-w /var/log/faillog -p wa -k login
+-w /var/log/lastlog -p wa -k login
+-w /var/log/tallylog -p wa -k login
+
+### Detect Remote Shell Use
+-a always,exit -F arch=b64 -F exe=/bin/bash -F success=1 -S connect -k "remote_shell"
+-a always,exit -F arch=b64 -F exe=/usr/bin/bash -F success=1 -S connect -k "remote_shell"
+
+
+### Changes to other files
+-w /etc/hosts -p wa -k network_modifications
+-w /etc/sysconfig/network -p wa -k network_modifications
+-w /etc/sysconfig/network-scripts -p w -k network_modifications
+-w /etc/network/ -p wa -k network
+-a always,exit -F dir=/etc/NetworkManager/ -F perm=wa -k network_modifications
+
+### Changes to issue
+-w /etc/issue -p wa -k etcissue
+-w /etc/issue.net -p wa -k etcissue
+
+## System startup scripts
+-w /etc/inittab -p wa -k init
+-w /etc/init.d/ -p wa -k init
+-w /etc/init/ -p wa -k init
+
+## Library search paths
+-w /etc/ld.so.conf -p wa -k libpath
+-w /etc/ld.so.conf.d -p wa -k libpath
+
+## Systemwide library preloads (LD_PRELOAD)
+-w /etc/ld.so.preload -p wa -k systemwide_preloads
+
+
+## Pam configuration
+-w /etc/pam.d/ -p wa -k pam
+-w /etc/security/limits.conf -p wa  -k pam
+-w /etc/security/limits.d -p wa  -k pam
+-w /etc/security/pam_env.conf -p wa -k pam
+-w /etc/security/namespace.conf -p wa -k pam
+-w /etc/security/namespace.d -p wa -k pam
+-w /etc/security/namespace.init -p wa -k pam
+
+## Mail configuration
+-w /etc/aliases -p wa -k mail
+-w /etc/postfix/ -p wa -k mail
+-w /etc/exim4/ -p wa -k mail
+
+## SSH configuration
+-w /etc/ssh/sshd_config -k sshd
+-w /etc/ssh/sshd_config.d -k sshd
+
+## root ssh key tampering
+-w /root/.ssh -p wa -k rootkey
+
+# Systemd
+#-w /bin/systemctl -p x -k systemd
+#-w /etc/systemd/ -p wa -k systemd
+#-w /usr/lib/systemd -p wa -k systemd
+
+## https://systemd.network/systemd.generator.html
+-w /etc/systemd/system-generators/ -p wa -k systemd_generator
+-w /usr/local/lib/systemd/system-generators/ -p wa -k systemd_generator
+-w /usr/lib/systemd/system-generators -p wa -k systemd_generator
+
+-w /etc/systemd/user-generators/ -p wa -k systemd_generator
+-w /usr/local/lib/systemd/user-generators/ -p wa -k systemd_generator
+-w /lib/systemd/system-generators/ -p wa -k systemd_generator
+
+
+## Critical elements access failures
+-a always,exit -F arch=b64 -S open -F dir=/etc -F success=0 -k unauthedfileaccess
+-a always,exit -F arch=b64 -S open -F dir=/bin -F success=0 -k unauthedfileaccess
+-a always,exit -F arch=b64 -S open -F dir=/sbin -F success=0 -k unauthedfileaccess
+-a always,exit -F arch=b64 -S open -F dir=/usr/bin -F success=0 -k unauthedfileaccess
+-a always,exit -F arch=b64 -S open -F dir=/usr/sbin -F success=0 -k unauthedfileaccess
+-a always,exit -F arch=b64 -S open -F dir=/var -F success=0 -k unauthedfileaccess
+-a always,exit -F arch=b64 -S open -F dir=/home -F success=0 -k unauthedfileaccess
+-a always,exit -F arch=b64 -S open -F dir=/srv -F success=0 -k unauthedfileaccess
+
+## Process ID change (switching accounts) applications
+-w /bin/su -p x -k priv_esc
+-w /usr/bin/sudo -p x -k priv_esc
+
+## Power state
+-w /sbin/shutdown -p x -k power
+-w /sbin/poweroff -p x -k power
+-w /sbin/reboot -p x -k power
+-w /sbin/halt -p x -k power
+
+
+## Discretionary Access Control (DAC) modifications
+-a always,exit -F arch=b64 -S chmod  -F auid>=1000 -F auid!=-1 -k perm_mod
+-a always,exit -F arch=b64 -S chown -F auid>=1000 -F auid!=-1 -k perm_mod
+-a always,exit -F arch=b64 -S fchmod -F auid>=1000 -F auid!=-1 -k perm_mod
+-a always,exit -F arch=b64 -S fchmodat -F auid>=1000 -F auid!=-1 -k perm_mod
+-a always,exit -F arch=b64 -S fchown -F auid>=1000 -F auid!=-1 -k perm_mod
+-a always,exit -F arch=b64 -S fchownat -F auid>=1000 -F auid!=-1 -k perm_mod
+-a always,exit -F arch=b64 -S fremovexattr -F auid>=1000 -F auid!=-1 -k perm_mod
+-a always,exit -F arch=b64 -S fsetxattr -F auid>=1000 -F auid!=-1 -k perm_mod
+-a always,exit -F arch=b64 -S lchown -F auid>=1000 -F auid!=-1 -k perm_mod
+-a always,exit -F arch=b64 -S lremovexattr -F auid>=1000 -F auid!=-1 -k perm_mod
+-a always,exit -F arch=b64 -S lsetxattr -F auid>=1000 -F auid!=-1 -k perm_mod
+-a always,exit -F arch=b64 -S removexattr -F auid>=1000 -F auid!=-1 -k perm_mod
+-a always,exit -F arch=b64 -S setxattr -F auid>=1000 -F auid!=-1 -k perm_mod
+
+
+## Reconnaissance
+-w /usr/bin/whoami -p x -k recon
+-w /usr/bin/id -p x -k recon
+-w /bin/hostname -p x -k recon
+-w /bin/uname -p x -k recon
+-w /etc/issue -p r -k recon
+-w /etc/hostname -p r -k recon
+
+
+## sssd
+-a always,exit -F path=/usr/libexec/sssd/p11_child -F perm=x -F auid>=500 -F auid!=4294967295 -k T1078_Valid_Accounts
+-a always,exit -F path=/usr/libexec/sssd/krb5_child -F perm=x -F auid>=500 -F auid!=4294967295 -k T1078_Valid_Accounts
+-a always,exit -F path=/usr/libexec/sssd/ldap_child -F perm=x -F auid>=500 -F auid!=4294967295 -k T1078_Valid_Accounts
+-a always,exit -F path=/usr/libexec/sssd/selinux_child -F perm=x -F auid>=500 -F auid!=4294967295 -k T1078_Valid_Accounts
+-a always,exit -F path=/usr/libexec/sssd/proxy_child -F perm=x -F auid>=500 -F auid!=4294967295 -k T1078_Valid_Accounts
+
+
+## dbus-send invocation
+### may indicate privilege escalation CVE-2021-3560
+-w /usr/bin/dbus-send -p x -k dbus_send
+
+## pkexec invocation
+### may indicate privilege escalation CVE-2021-4034
+-w /usr/bin/pkexec -p x -k pkexec
+
+## Suspicious shells
+-w /bin/ash -p x -k susp_shell
+-w /bin/csh -p x -k susp_shell
+-w /bin/tcsh -p x -k susp_shell
+-w /bin/tclsh -p x -k susp_shell
+-w /bin/xonsh -p x -k susp_shell
+-w /usr/local/bin/xonsh -p x -k susp_shell
+-w /bin/open -p x -k susp_shell
+-w /bin/rbash -p x -k susp_shell
+
+# Web Server Actvity
+## Change the number "33" to the ID of your WebServer user. Default: www-data:x:33:33
+-a always,exit -F arch=b64 -S execve -F euid=33 -k detect_execve_www
+
+### https://clustershell.readthedocs.io/
+-w /bin/clush -p x -k susp_shell
+-w /usr/local/bin/clush -p x -k susp_shell
+-w /etc/clustershell/clush.conf -p x -k susp_
+
+## Shell/profile configurations
+-w /etc/profile.d/ -p wa -k shell_profiles
+-w /etc/profile -p wa -k shell_profiles
+-w /etc/shells -p wa -k shell_profiles
+-w /etc/bashrc -p wa -k shell_profiles
+-w /etc/csh.cshrc -p wa -k shell_profiles
+-w /etc/csh.login -p wa -k shell_profiles
+-w /etc/fish/ -p wa -k shell_profiles
+-w /etc/zsh/ -p wa -k shell_profiles
+
+
+### https://github.com/xxh/xxh
+-w /usr/local/bin/xxh.bash -p x -k susp_shell
+-w /usr/local/bin/xxh.xsh -p x -k susp_shell
+-w /usr/local/bin/xxh.zsh -p x -k susp_shell
+
+
+## Anonymous File Creation
+### These rules watch the use of memfd_create
+### "memfd_create" creates anonymous file and returns a file descriptor to access it
+### When combined with "fexecve" can be used to stealthily run binaries in memory without touching disk
+-a always,exit -F arch=b64 -S memfd_create -F key=anon_file_create
+
+############
+############
+
+## Make the configuration immutable - reboot is required to change audit rules
+-e 2
