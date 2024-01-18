@@ -53,17 +53,22 @@
 ## Ignore current working directory records
 -a always,exclude -F msgtype=CWD
 
-## Cron jobs fill the logs with stuff we normally don't want (works with SELinux)
--a never,user -F subj_type=crond_t
--a never,exit -F subj_type=crond_t
-
 ## This is not very interesting and wastes a lot of space if the server is public facing
 -a always,exclude -F msgtype=CRYPTO_KEY_USER
 
 # spam
 -a always,exclude -F msgtype=NETFILTER_CFG
--a always,exclude -F msgtype=SERVICE_START
--a always,exclude -F msgtype=SERVICE_STOP
+-a exclude,always -F msgtype=MAC_IPSEC_EVENT
+-a exclude,always -F msgtype=USER_AUTH
+-a exclude,always -F msgtype=USER_ACCT
+-a exclude,always -F msgtype=CRED_REFR
+-a exclude,always -F msgtype=CRED_DISP
+-a exclude,always -F msgtype=CRED_ACQ
+-a exclude,always -F msgtype=USER_START
+-a exclude,always -F msgtype=USER_CMD
+-a exclude,always -F msgtype=USER_END
+-a exclude,always -F msgtype=SERVICE_START
+-a exclude,always -F msgtype=SERVICE_STOP
 
 ## High Volume Event Filter (especially on Linux Workstations)
 -a never,exit -F arch=b64 -F dir=/dev/shm -k sharedmemaccess
