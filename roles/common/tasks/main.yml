@@ -1,6 +1,7 @@
 - name: Populate service facts
   service_facts:
 #- import_tasks: netdata.yml
+- import_tasks: audit.yml
 - import_tasks: basic_packages.yml
 - import_tasks: shell.yml
 - import_tasks: mail.yml
