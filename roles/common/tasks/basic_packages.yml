@@ -24,6 +24,7 @@
       - fish
       - unattended-upgrades
       - chkrootkit
+      - rkhunter
       - needrestart
     state: present
 
