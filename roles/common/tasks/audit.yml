@@ -4,10 +4,10 @@
     state: present
   when: inventory_hostname != "demon"
 
-- name: copy file /etc/audit/audit.rules
+- name: copy file /etc/audit/rules.d/audit.rules
   copy:
     src: audit.rules
-    dest: /etc/audit/audit.rules
+    dest: /etc/audit/rules.d/audit.rules
     owner: root
     group: root
     mode: 0644
