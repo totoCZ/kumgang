@@ -1,3 +1,6 @@
 #!/bin/bash
 
 /sbin/aureport -k -ts yesterday 00:00:00 -te yesterday 23:59:59 | /bin/grep -q "^<no events of interest were found>" || /sbin/aureport -k -ts yesterday 00:00:00 -te yesterday 23:59:59
+
+# rotates logs
+pkill -USR1 -x auditd
