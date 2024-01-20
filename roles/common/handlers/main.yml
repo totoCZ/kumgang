@@ -26,3 +26,9 @@
     daemon_reload: yes
 - name: update grub
   command: update-grub
+- name: restart auditd
+  systemd:
+    name: auditd
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
