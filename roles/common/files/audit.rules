@@ -34,8 +34,8 @@
 
 ## Audit the audit logs
 ### Successful and unsuccessful attempts to read information from the audit records
--w /var/log/audit/ -p wra -k auditlog
--w /var/audit/ -p wra -k auditlog
+#-w /var/log/audit/ -p wra -k auditlog
+#-w /var/audit/ -p wra -k auditlog
 
 ## Auditd configuration
 ### Modifications to audit configuration that occur while the audit collection functions are operating
@@ -77,7 +77,7 @@
 -a always,exit -F arch=b64 -S kexec_load -k KEXEC
 
 ## Special files
--a always,exit -F arch=b64 -S mknod -S mknodat -k specialfiles
+#-a always,exit -F arch=b64 -S mknod -S mknodat -k specialfiles
 
 ## Mount operations (only attributable)
 -a always,exit -F arch=b64 -S mount -S umount2 -F auid!=-1 -k mount
