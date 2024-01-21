@@ -15,6 +15,14 @@
 ## e.g. caused by users or files not found in the local environment  
 -i 
 
+## This suppresses syscall auditing for all tasks started
+## with this rule in effect.  Remove it if you need syscall
+## auditing.
+-a task,never
+
+## Make the loginuid immutable. This prevents tampering with the auid.
+--loginuid-immutable
+
 # Filter
 -a never,exclude -F msgtype=SERVICE_START
 -a never,exclude -F msgtype=SERVICE_STOP
@@ -81,6 +89,58 @@
 ### because this might be a sign of someone exploiting a hole in the 32
 ### bit API.
 -a always,exit -F arch=b32 -S all -k 32bit_api
+
+## User add delete modify. This is covered by pam. However, someone could
+## open a file and directly create or modify a user, so we'll watch passwd and
+## shadow for writes
+-a always,exit -F arch=b64 -S openat,open_by_handle_at -F a2&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify
+-a always,exit -F arch=b64 -S open -F a1&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify
+-a always,exit -F arch=b64 -S openat,open_by_handle_at -F a2&03 -F path=/etc/shadow -F auid>=1000 -F auid!=unset -F key=user-modify
+-a always,exit -F arch=b64 -S open -F a1&03 -F path=/etc/shadow -F auid>=1000 -F auid!=unset -F key=user-modify
+
+## Group add delete modify. This is covered by pam. However, someone could
+## open a file and directly create or modify a user, so we'll watch group and
+## gshadow for writes
+-a always,exit -F arch=b64 -F path=/etc/passwd -F perm=wa -F auid>=1000 -F auid!=unset -F key=user-modify
+-a always,exit -F arch=b64 -F path=/etc/shadow -F perm=wa -F auid>=1000 -F auid!=unset -F key=user-modify
+-a always,exit -F arch=b64 -F path=/etc/group -F perm=wa -F auid>=1000 -F auid!=unset -F key=group-modify
+-a always,exit -F arch=b64 -F path=/etc/gshadow -F perm=wa -F auid>=1000 -F auid!=unset -F key=group-modify
+
+## Use of special rights for config changes. This would be use of setuid
+## programs that relate to user accts. This is not all setuid apps because
+## requirements are only for ones that affect system configuration.
+-a always,exit -F arch=b64 -F path=/usr/sbin/unix_chkpwd -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F arch=b64 -F path=/usr/sbin/usernetctl -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F arch=b64 -F path=/usr/sbin/userhelper -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F arch=b64 -F path=/usr/sbin/seunshare -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F arch=b64 -F path=/usr/bin/mount -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F arch=b64 -F path=/usr/bin/newgrp -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F arch=b64 -F path=/usr/bin/newuidmap -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F arch=b64 -F path=/usr/bin/gpasswd -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F arch=b64 -F path=/usr/bin/newgidmap -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F arch=b64 -F path=/usr/bin/umount -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F arch=b64 -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F arch=b64 -F path=/usr/bin/crontab -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F arch=b64 -F path=/usr/bin/at -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+-a always,exit -F arch=b64 -F path=/usr/sbin/grub2-set-bootflag -F perm=x -F auid>=1000 -F auid!=unset -F key=special-config-changes
+
+## Privilege escalation via su or sudo. This is entirely handled by pam.
+## Special case for systemd-run. It is not audit aware, specifically watch it
+-a always,exit -F arch=b64 -F path=/usr/bin/systemd-run -F perm=x -F auid!=unset -F key=maybe-escalation
+## Special case for pkexec. It is not audit aware, specifically watch it
+-a always,exit -F arch=b64 -F path=/usr/bin/pkexec -F perm=x -F key=maybe-escalation
+
+## Watch for configuration changes to privilege escalation.
+-a always,exit -F arch=b64 -F path=/etc/sudoers -F perm=wa -F key=special-config-changes
+-a always,exit -F arch=b64 -F dir=/etc/sudoers.d/ -F perm=wa -F key=special-config-changes
+
+## Things that could affect system locale
+-a always,exit -F arch=b64 -S sethostname,setdomainname -F key=system-locale
+-a always,exit -F arch=b64 -F path=/etc/issue -F perm=wa -F key=system-locale
+-a always,exit -F arch=b64 -F path=/etc/issue.net -F perm=wa -F key=system-locale
+-a always,exit -F arch=b64 -F path=/etc/hosts -F perm=wa -F key=system-locale
+-a always,exit -F arch=b64 -F path=/etc/hostname -F perm=wa -F key=system-locale
+-a always,exit -F arch=b64 -F dir=/etc/NetworkManager/ -F perm=wa -F key=system-locale
 
 # Make the configuration immutable --------------------------------------------
 ##-e 2
