@@ -16,6 +16,9 @@
 -i 
 
 
+-a never,exclude -F msgtype=SERVICE_START
+-a never,exclude -F msgtype=SERVICE_STOP
+-a never,exclude -F msgtype=NETFILTER_CHG
 
 ### minimal ruleset here
 
