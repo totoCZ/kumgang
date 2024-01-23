@@ -65,10 +65,6 @@
 -a always,exit -F arch=b64 -S open -F dir=/home -F success=0 -k unauthedfileaccess
 -a always,exit -F arch=b64 -S open -F dir=/srv -F success=0 -k unauthedfileaccess
 
-# Web Server Actvity
-## Change the number "33" to the ID of your WebServer user. Default: www-data:x:33:33
--a always,exit -F arch=b64 -S execve -F euid=33 -k detect_execve_www
-
 ## Injection
 ### These rules watch for code injection by the ptrace facility.
 ### This could indicate someone trying to do something bad or just debugging
