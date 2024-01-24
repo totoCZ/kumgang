@@ -24,6 +24,7 @@
       - fish
       - unattended-upgrades
       - needrestart
+      - bsd-mailx
     state: present
 
 # temp not avail in lts
@@ -96,6 +97,11 @@
 #     - google-cloud-cli
 #     - snapd
 #   when: ansible_distribution == "Ubuntu"
+
+- name: bsd mailx preferred
+  apt:
+    name: mailutils
+    state: absent
 
 - name: purge snapd
   apt:
