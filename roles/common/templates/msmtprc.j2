@@ -5,8 +5,8 @@ tls_trust_file /etc/ssl/certs/ca-certificates.crt
 
 account        smtp
 host           mail.hetmer.net
-port           587
-tls_starttls   on
+port           465
+tls_starttls   off
 from           system@hetmer.com
 user           system@hetmer.com
 password       {{ system_mail_pwd }}
