@@ -5,21 +5,12 @@
     line: 'Domains=hetmer.net'
     state: present
 
-- name: resolve on cf
-  lineinfile:
-    path: /etc/systemd/resolved.conf
-    regexp: '^DNS='
-    line: 'DNS=2606:4700:4700::1111#cloudflare-dns.com 2606:4700:4700::1001#cloudflare-dns.com 1.1.1.1#cloudflare-dns.com 1.0.0.1#cloudflare-dns.com'
-    state: present
-  notify: restart systemd-resolved
-
 - name: dot on
   lineinfile:
     path: /etc/systemd/resolved.conf
     regexp: '^DNSOverTLS='
     line: 'DNSOverTLS=yes'
     state: present
-  when: ansible_host != "mail"
 
 - name: dnssec on
   lineinfile:
@@ -28,14 +19,25 @@
     line: 'DNSSEC=yes'
     state: present
 
+- name: resolve on cf
+  lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^DNS='
+    line: 'DNS=2606:4700:4700::1111#cloudflare-dns.com 2606:4700:4700::1001#cloudflare-dns.com 1.1.1.1#cloudflare-dns.com 1.0.0.1#cloudflare-dns.com'
+    state: present
+  when: ansible_host != "mail"
+  notify: restart systemd-resolved
+
 - name: resolve fallback on quad9 (v4 first)
   lineinfile:
     path: /etc/systemd/resolved.conf
     regexp: '^FallbackDNS='
     line: 'FallbackDNS=9.9.9.11#dns11.quad9.net 149.112.112.11#dns11.quad9.net 2620:fe::11#dns11.quad9.net 2620:fe:fe::11#dns11.quad9.net'
     state: present
+  when: ansible_host != "mail"
   notify: restart systemd-resolved
 
+# delays
  - name: disable DNSStubListener on mail
    lineinfile:
      path: /etc/systemd/resolved.conf
@@ -43,3 +45,24 @@
      line: 'DNSStubListener=no'
      state: present
    when: ansible_host == "mail"
+
+# dnsbl works best
+
+- name: dns for mail 1
+  lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^DNS='
+    line: 'DNS=2620:fe::11#dns11.quad9.net 2620:fe:fe::11#dns11.quad9.net 9.9.9.11#dns11.quad9.net 149.112.112.11#dns11.quad9.net'
+    state: present
+  when: ansible_host == "mail"
+  notify: restart systemd-resolved
+
+- name: dns for mail 2
+  lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^FallbackDNS='
+    line: 'FallbackDNS=1.1.1.1#cloudflare-dns.com 1.0.0.1#cloudflare-dns.com 2606:4700:4700::1111#cloudflare-dns.com 2606:4700:4700::1001#cloudflare-dns.com'
+    state: present
+  when: ansible_host == "mail"
+  notify: restart systemd-resolved
+
