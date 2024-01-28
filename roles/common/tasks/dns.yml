@@ -35,3 +35,11 @@
     line: 'FallbackDNS=9.9.9.11#dns11.quad9.net 149.112.112.11#dns11.quad9.net 2620:fe::11#dns11.quad9.net 2620:fe:fe::11#dns11.quad9.net'
     state: present
   notify: restart systemd-resolved
+
+ - name: disable DNSStubListener on mail
+   lineinfile:
+     path: /etc/systemd/resolved.conf
+     regexp: '^DNSStubListener='
+     line: 'DNSStubListener=no'
+     state: present
+   when: ansible_host == "mail"
