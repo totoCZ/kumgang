@@ -16,6 +16,12 @@
     state: restarted
     enabled: yes
     daemon_reload: yes
+- name: restart systemd-timesyncd
+  systemd:
+    name: systemd-timesyncd
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
 - name: reload superb rules
   command: sysctl -p /etc/sysctl.d/99-superb.conf
 - name: restart glances
