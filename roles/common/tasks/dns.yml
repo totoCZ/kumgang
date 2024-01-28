@@ -38,13 +38,13 @@
   notify: restart systemd-resolved
 
 # delays
- - name: disable DNSStubListener on mail
-   lineinfile:
-     path: /etc/systemd/resolved.conf
-     regexp: '^DNSStubListener='
-     line: 'DNSStubListener=no'
-     state: present
-   when: ansible_host == "mail"
+- name: disable DNSStubListener on mail
+  lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^DNSStubListener='
+    line: 'DNSStubListener=no'
+    state: present
+  when: ansible_host == "mail"
 
 # dnsbl works best
 
