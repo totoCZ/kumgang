@@ -58,3 +58,13 @@ hooks:
     - name: roundcube
       path: /var/lib/poste/roundcube/roundcube.db
 {% endif %}
+{% if inventory_hostname == "web" %}
+  sqlite_databases:
+    - name: dash
+      path: /var/www/dash.hetmer.com/data/db.sqlite
+{% endif %}
+{% if inventory_hostname == "proxmox" %}
+  sqlite_databases:
+    - name: proxmox
+      path: /var/lib/pve-cluster/config.db
+{% endif %}
