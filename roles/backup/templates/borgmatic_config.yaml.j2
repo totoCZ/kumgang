@@ -38,9 +38,9 @@ consistency:
 hooks:
   before_backup:
     - borgmatic rcreate --encryption repokey-blake2
-  on_error:
-    - echo  "There was a problem with backups on repo {repository}: {error} {output}" | sendmail root
+  #on_error:
+  #  - echo "There was a problem with backups on repo {repository}: {error} {output}" | sendmail root
 {% if inventory_hostname == "mariadb" %}
-  mariadb_databases:
+  mysql_databases:
     - name: all
 {% endif %}
