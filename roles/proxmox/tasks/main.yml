@@ -27,6 +27,7 @@
    with_items:
      - numad
      - sysfsutils
+     - irqbalance
 
  - name: numad started and enabled
    systemd:
