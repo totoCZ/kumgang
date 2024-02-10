@@ -49,7 +49,7 @@ hooks:
     - name: grafana
       path: /var/lib/grafana/grafana.db
 {% endif %}
-{% if inventory_hostname == "mail %}
+{% if inventory_hostname == "mail" %}
   sqlite_databases:
     - name: users
       path: /var/lib/poste/users.db
