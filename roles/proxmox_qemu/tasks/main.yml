@@ -14,3 +14,9 @@
     name: fwupd-refresh.timer
     enabled: no
     state: stopped
+
+- name: Disable irqbalance
+  systemd:
+    name: irqbalance.service
+    enabled: no
+    state: stopped
