@@ -44,3 +44,13 @@ hooks:
   mysql_databases:
     - name: all
 {% endif %}
+{% if inventory_hostname == "monitoring" %}
+  sqlite_databases:
+    - name: grafana
+      path: /var/lib/grafana/grafana.db
+{% endif %}
+{% if inventory_hostname == "mail %}
+  sqlite_databases:
+    - name: users
+      path: /var/lib/poste/users.db
+{% endif %}
