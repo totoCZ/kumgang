@@ -1,70 +1,65 @@
-location:
-  source_directories:
-    - /
-    - /boot/efi
-  repositories:
-    - ssh://u312523@u312523.your-storagebox.de/./borg/{{ ansible_hostname }}
-    - ssh://u341924@u341924.your-storagebox.de/./borg/{{ ansible_hostname }}
-  one_file_system: true
-  exclude_patterns:
-    - /var/lib/vz/images
-    - /mnt/data
-    - /var/audit
-    - /var/lock
-    - /var/run
-    - /var/tmp
-    - /var/cache
-    - /var/backups
-    - /var/log
-    - .cache
-    - /dev
-    - /proc
-    - /sys
-    - /run
-    - /tmp
-storage:
-  encryption_passphrase: {{ borgmatic_password }}
-  ssh_command: ssh -i /root/.ssh/id_backups -p 23 -o StrictHostKeyChecking=no
-  compression: auto,zstd
-retention:
-  keep_daily: 7
-  keep_weekly: 4
-consistency:
-  checks:
-    - name: repository
-      frequency: 2 weeks
-    - name: archives
-      frequency: 1 month
-hooks:
-  before_backup:
-    - borgmatic rcreate --encryption repokey-blake2
-  #on_error:
-  #  - echo "There was a problem with backups on repo {repository}: {error} {output}" | sendmail root
+source_directories:
+  - /
+  - /boot/efi
+repositories:
+  - path: ssh://u312523@u312523.your-storagebox.de/./borg/{{ ansible_hostname }}
+    label: fsn
+  - path: ssh://u341924@u341924.your-storagebox.de/./borg/{{ ansible_hostname }}
+    label: hel
+numeric_ids: true
+ctime: false
+one_file_system: true
+exclude_patterns:
+  - /var/lib/vz/images
+  - /mnt/data
+  - /var/audit
+  - /var/lock
+  - /var/run
+  - /var/tmp
+  - /var/cache
+  - /var/backups
+  - /var/log
+  - .cache
+  - /dev
+  - /proc
+  - /sys
+  - /run
+  - /tmp
+encryption_passphrase: {{ borgmatic_password }}
+ssh_command: ssh -i /root/.ssh/id_backups -p 23 -o StrictHostKeyChecking=no
+compression: auto,zstd
+keep_daily: 7
+keep_weekly: 4
+checks:
+  - name: repository
+    frequency: 2 weeks
+before_backup:
+  - borgmatic rcreate --encryption repokey-blake2
 {% if inventory_hostname == "mariadb" %}
-  mariadb_databases:
-    - name: all
+mariadb_databases:
+  - name: all
 {% endif %}
 {% if inventory_hostname == "monitoring" %}
-  sqlite_databases:
-    - name: grafana
-      path: /var/lib/grafana/grafana.db
+sqlite_databases:
+  - name: grafana
+    path: /var/lib/grafana/grafana.db
 {% endif %}
 {% if inventory_hostname == "mail" %}
-  sqlite_databases:
-    - name: users
-      path: /var/lib/poste/users.db
-    - name: dav
-      path: /var/lib/poste/dav.db
-    - name: roundcube
-      path: /var/lib/poste/roundcube/roundcube.db
+sqlite_databases:
+  - name: users
+    path: /var/lib/poste/users.db
+  - name: dav
+    path: /var/lib/poste/dav.db
+  - name: roundcube
+    path: /var/lib/poste/roundcube/roundcube.db
 {% endif %}
 {% if inventory_hostname == "web" %}
-  sqlite_databases:
-    - name: dash
-      path: /var/www/dash.hetmer.com/data/db.sqlite
+sqlite_databases:
+  - name: dash
+    path: /var/www/dash.hetmer.com/data/db.sqlite
 {% endif %}
 {% if inventory_hostname == "proxmox" %}
-  sqlite_databases:
-    - name: proxmox
+sqlite_databases:
+  - name: proxmox
       path: /var/lib/pve-cluster/config.db
 {% endif %}
