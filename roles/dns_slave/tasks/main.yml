@@ -51,7 +51,7 @@
     src: /tmp/coredns.tgz
     dest: "{{ coredns_dir }}"
     remote_src: yes
-  when: coredns_version_to_install not in coredns_version_installed.stdout and inventory_hostname != "demon"
+  when: coredns_version_to_install not in coredns_version_installed.stdout
 
 
 # ensure DNSStubListener=no is disabled
