@@ -25,6 +25,7 @@
       - unattended-upgrades
       - needrestart
       - bsd-mailx
+      - command-not-found
     state: present
 
 # temp not avail in lts
@@ -128,3 +129,25 @@
     - postfix
     - motd-news.timer
   when: item in ansible_facts.services.keys()
+
+- name: apt 10periodic
+  copy:
+    src: apt_10periodic
+    dest: /etc/apt/apt.conf.d/10periodic
+    owner: root
+    group: root
+    mode: 0644
+
+- name: apt 20auto-upgrades
+  copy:
+    src: apt_20auto-upgrades
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Enable remove unused deps in /etc/apt/apt.conf.d/50unattended-upgrades
+  lineinfile:
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+    line: 'Unattended-Upgrade::Remove-Unused-Dependencies "true";'
+    insertafter: '^//Unattended-Upgrade::Remove-Unused-Dependencies'
