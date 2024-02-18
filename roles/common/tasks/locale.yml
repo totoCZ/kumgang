@@ -1,0 +1,8 @@
+- name: Configure locale
+  copy:
+    src: locale.gen
+    dest: /etc/locale.gen
+    owner: root
+    group: root
+    mode: 0644
+  notify: locale-gen

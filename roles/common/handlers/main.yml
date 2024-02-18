@@ -38,6 +38,8 @@
     daemon_reload: yes
 - name: update grub
   command: update-grub
+- name: locale-gen
+  command: locale-gen
 - name: restart auditd
   systemd:
     name: auditd
