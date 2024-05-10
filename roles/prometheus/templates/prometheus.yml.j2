@@ -47,7 +47,9 @@ scrape_configs:
 
   - job_name: "validator"
     static_configs:
-      - targets: ['eth-validator.hetmer.net:8081']
+      - targets:
+        - 'eth-validator.hetmer.net:8081'
+        - 'eth-validator.hetmer.net:8082'
 
   - job_name: "rocketpool"
     static_configs:
