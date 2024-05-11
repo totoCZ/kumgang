@@ -9,6 +9,7 @@
     - /etc/update-motd.d/91-contract-ua-esm-status
     - /etc/update-motd.d/95-hwe-eol
   when: ansible_distribution == "Ubuntu"
+  ignore_errors: yes
  #   - /etc/update-motd.d/97-overlayroot
  # not in gcp
 
